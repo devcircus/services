@@ -42,6 +42,7 @@ Next, in the config file, you can map the Service to the Task. See example below
         'App\Services\Definitions\StoreNewTaskService' => 'App\Services\Handlers\StoreNewTaskServiceHandler',
     ],
 ```
+Alternatively, you could extend the base ServiceHandlerServiceProvider and using the 'getHandlers' method, return the mapping of Service Definitions to Service Handlers.
 
 Now, you can call your service by using the included trait (CallsServices):
 ```php
