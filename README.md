@@ -1,7 +1,7 @@
 # Bright Components - Service
 ### A "Definition/Handler" Implementation of Service classes for Laravel Projects.
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/bright-components/servicehandler.svg?style=flat-square)](https://packagist.org/packages/bright-components/servicehandler)
+[![Latest Version on Packagist](https://img.shields.io/packagist/vpre/bright-components/servicehandler.svg?style=flat-square)](https://packagist.org/packages/bright-components/servicehandler)
 [![Build Status](https://img.shields.io/travis/bright-components/servicehandler/master.svg?style=flat-square)](https://travis-ci.org/bright-components/servicehandler)
 [![Quality Score](https://img.shields.io/scrutinizer/g/bright-components/servicehandler.svg?style=flat-square)](https://scrutinizer-ci.com/g/bright-components/servicehandler)
 [![Total Downloads](https://img.shields.io/packagist/dt/bright-components/servicehandler.svg?style=flat-square)](https://packagist.org/packages/bright-components/servicehandler)
