@@ -1,10 +1,10 @@
 # Bright Components - Service
 ### A "Definition/Handler" Implementation of Service classes for Laravel Projects.
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/bright-components/service.svg?style=flat-square)](https://packagist.org/packages/bright-components/service)
-[![Build Status](https://img.shields.io/travis/bright-components/service/master.svg?style=flat-square)](https://travis-ci.org/bright-components/service)
-[![Quality Score](https://img.shields.io/scrutinizer/g/bright-components/service.svg?style=flat-square)](https://scrutinizer-ci.com/g/bright-components/service)
-[![Total Downloads](https://img.shields.io/packagist/dt/bright-components/service.svg?style=flat-square)](https://packagist.org/packages/bright-components/service)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/bright-components/servicehandler.svg?style=flat-square)](https://packagist.org/packages/bright-components/service)
+[![Build Status](https://img.shields.io/travis/bright-components/servicehandler/master.svg?style=flat-square)](https://travis-ci.org/bright-components/service)
+[![Quality Score](https://img.shields.io/scrutinizer/g/bright-components/servicehandler.svg?style=flat-square)](https://scrutinizer-ci.com/g/bright-components/service)
+[![Total Downloads](https://img.shields.io/packagist/dt/bright-components/servicehandler.svg?style=flat-square)](https://packagist.org/packages/bright-components/service)
 
 ![Bright Components](https://s3.us-east-2.amazonaws.com/bright-components/bc_large.png "Bright Components")
 
