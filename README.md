@@ -68,6 +68,8 @@ You can install the package via composer:
 composer require bright-components/service
 ```
 
+In Laravel > 5.6.0, the ServiceProvider will be automatically detected and registered.
+
 Then, run:
 ```bash
 php artisan vendor:publish
