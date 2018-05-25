@@ -1,10 +1,10 @@
 # Bright Components - Service
 ### A "Definition/Handler" Implementation of Service classes for Laravel Projects.
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/vpre/bright-components/servicehandler.svg?style=flat-square)](https://packagist.org/packages/bright-components/servicehandler)
-[![Build Status](https://img.shields.io/travis/bright-components/servicehandler/master.svg?style=flat-square)](https://travis-ci.org/bright-components/servicehandler)
-[![Quality Score](https://img.shields.io/scrutinizer/g/bright-components/servicehandler.svg?style=flat-square)](https://scrutinizer-ci.com/g/bright-components/servicehandler)
-[![Total Downloads](https://img.shields.io/packagist/dt/bright-components/servicehandler.svg?style=flat-square)](https://packagist.org/packages/bright-components/servicehandler)
+[![Latest Version on Packagist](https://img.shields.io/packagist/vpre/bright-components/servicehandler.svg)](https://packagist.org/packages/bright-components/servicehandler)
+[![Build Status](https://img.shields.io/travis/bright-components/servicehandler/master.svg)](https://travis-ci.org/bright-components/servicehandler)
+[![Quality Score](https://img.shields.io/scrutinizer/g/bright-components/servicehandler.svg)](https://scrutinizer-ci.com/g/bright-components/servicehandler)
+[![Total Downloads](https://img.shields.io/packagist/dt/bright-components/servicehandler.svg)](https://packagist.org/packages/bright-components/servicehandler)
 
 ![Bright Components](https://s3.us-east-2.amazonaws.com/bright-components/bc_large.png "Bright Components")
 
@@ -22,7 +22,7 @@ php artisan vendor:publish
 ```
 and choose the BrightComponents/Service option.
 
-This will copy the package configuration (service.php) to your 'config' folder.
+This will copy the package configuration (servicehandler.php) to your 'config' folder.
 Here, you can set your namespaces and also map your Service definitions to their appropriate handler class.
 
 ## Usage
@@ -34,7 +34,7 @@ To generate a Service class and Handler, run:
 ```bash
 php artisan make:service StoreNewTaskService
 ```
-This will create a 'StoreNewTaskService' class and a 'StoreNewTaskServiceHandler' class according to the namespaces you set in the service.php config file.
+This will create a 'StoreNewTaskService' class and a 'StoreNewTaskServiceHandler' class according to the namespaces you set in the servicehandler.php config file.
 
 Next, in the config file, you can map the Service to the Task. See example below:
 ```php
