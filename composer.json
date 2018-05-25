@@ -1,0 +1,52 @@
+{
+    "name": "bright-components/servicehandler",
+    "description": "Service Definition/Handler Implementation for Laravel Projects",
+    "keywords": [
+        "bright-components",
+        "servicehandler"
+    ],
+    "homepage": "https://github.com/bright-components/servicehandler",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Clayton Stone",
+            "email": "clay@phpstage.com",
+            "homepage": "https://codestage.co",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.1",
+        "illuminate/support": "5.6.*",
+        "illuminate/container": "5.6.*",
+        "illuminate/pipeline": "5.6.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "BrightComponents\\Service\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BrightComponents\\Service\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "BrightComponents\\Service\\ServiceHandlerServiceProvider"
+            ]
+        }
+    }
+}
