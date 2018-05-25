@@ -131,6 +131,10 @@ Next, in the config file, you can map the Service to the Task. See example below
     ],
 ```
 
+As mentioned, alternatively, you could extend the base ServiceHandlerServiceProvider and using the ```getHandlers()``` method, return the mapping of Service Definitions to Service Handlers.
+
+Example Service Definition class:
+
 ```php
 // Service Definition Class
 namespace App\Services\Definitions;
@@ -155,8 +159,6 @@ class StoreItemService
     }
 }
 ```
-
-As mentioned, alternatively, you could extend the base ServiceHandlerServiceProvider and using the ```getHandlers()``` method, return the mapping of Service Definitions to Service Handlers.
 
 Now, you can call your service by using the included trait (CallsServices) or use dependency injection to add the ServiceCaller to your class:
 
