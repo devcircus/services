@@ -48,7 +48,7 @@ class ServiceMakeCommand extends GeneratorCommand
         $handler = Str::studly(class_basename($this->argument('name')));
 
         $this->call('make:handler', [
-            'name' => "{$handler}Handler",
+            'name' => $handler.config('servicehandler.handler_suffix', ''),
         ]);
     }
 
@@ -72,5 +72,15 @@ class ServiceMakeCommand extends GeneratorCommand
     protected function getDefaultNamespace($rootNamespace)
     {
         return $rootNamespace.'\\'.config('servicehandler.namespaces.root').'\\'.config('servicehandler.namespaces.definitions');
+    }
+
+    /**
+     * Get the desired class name from the input.
+     *
+     * @return string
+     */
+    protected function getNameInput()
+    {
+        return trim($this->argument('name')).config('servicehandler.service_suffix', '');
     }
 }

@@ -12,12 +12,12 @@ BrightComponents' Service package scratches an itch I've had for a while. I rout
 
 Example:
 ```php
-namespace App\Http\Controllers\Items;
+namespace App\Http\Controllers\Tasks;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreItemRequest;
-use App\Http\Responders\Item\StoreResponder;
-use App\Services\Definitions\StoreItemService;
+use App\Http\Requests\StoreNewTaskRequest;
+use App\Http\Responders\Task\StoreResponder;
+use App\Services\Definitions\StoreNewTaskService;
 use BrightComponents\Service\Traits\CallsServices; // the trait could be added to your parent Controller class
 
 class Store extends Controller
@@ -25,16 +25,16 @@ class Store extends Controller
     use CallsServices;
 
     /**
-     * The service used to store a new item.
+     * The service used to store a new task.
      *
-     * @var \App\Http\Responders\Items\StoreResponder
+     * @var \App\Http\Responders\Task\StoreResponder
      */
     private $responder;
 
     /**
      * Construct a new Store controller.
      *
-     * @param  \App\Http\Responders\Item\StoreResponder  $responder
+     * @param  \App\Http\Responders\Task\StoreResponder  $responder
      */
     public function __construct(StoreResponder $responder)
     {
@@ -42,17 +42,17 @@ class Store extends Controller
     }
 
     /**
-     * Handle the Item store action.
+     * Handle the task store action.
      *
-     * @param  \App\Http\Requests\StoreItemRequest  $request
+     * @param  \App\Http\Requests\StoreTaskRequest  $request
      *
      * @return \Illuminate\Http\Response
      */
-    public function __invoke(StoreItemRequest $request)
+    public function __invoke(StoreTaskRequest $request)
     {
-        $item = $this->call(new StoreItemService($request->validated()));
+        $task = $this->call(new StoreNewTaskService($request->validated()));
 
-        return $this->responder->respond($request, $item);
+        return $this->responder->respond($request, $task);
     }
 }
 
@@ -77,10 +77,20 @@ php artisan vendor:publish
 and choose the 'BrightComponents/Service' option.
 
 This will copy the package configuration (servicehandler.php) to your 'config' folder.
-Here, you can set your Service Definition and Handler namespaces and also map your Service definitions to their appropriate handler class:
+See the configuration file below, for all options available:
 
 ```php
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Autoload Services
+    |--------------------------------------------------------------------------
+    |
+    | Autoload the services from the configured service namespace, instead of explicitly defining the mapping in
+    | this configuration file or in the ServiceHandlerServiceProvider. This option is enabled by default.
+    |
+ */
+    'autoload' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -99,39 +109,73 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Suffixes
+    |--------------------------------------------------------------------------
+    |
+    | Set the suffix for the Service and Handler class names. Use an empty string for no suffix.
+    |
+    | example: 'service_suffix' => 'Service'
+    |
+    | When running 'php artisan make:service Testing', the above configuration will yield a service definition class
+    | named 'TestingService'. However, if instead, your config looks like 'service_suffix' => '', the resulting
+    | service definition class will simply be named 'Testing'. The handler suffix config works the same way.
+    |
+    | **Note**
+    | If you incidentally run the command 'php artisan make:service TestingService' and you also have
+    | 'Service' set as your suffix, the package will detect this and not duplicate the suffix.
+    | You can override this behavior using the 'override_duplicate_suffix' config option.
+    |
+     */
+    'service_suffix' => 'Service',
+    'handler_suffix' => 'Handler',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Duplicate Suffixes
+    |--------------------------------------------------------------------------
+    |
+    | If you have a suffix set in the config and try to generate a Service that also includes the suffix,
+    | the package will recognize this duplication and rename the Service to remove the extra suffix.
+    | This is the default behavior, to override and allow duplicate suffixes, change to false.
+    |
+     */
+    'override_duplicate_suffix' => true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Service / Handler mapping
     |--------------------------------------------------------------------------
     |
-    | Map Handlers to Services
+    | Map Handlers to Services. By default, there is no need to map your services to handlers. Your services will
+    | be autoloaded from your services directory, according to the namespaces that have been provided above.
+    | However, if you disable service autoloading, you will need to explicitly map your handlers here
+    | or override the ServiceProvider and perform the service to handler mapping there instead.
     |
     */
 
     'handlers' => [
-        'App\Services\Definitions\StoreItemService' => 'App\Services\Definitions\StoreItemServiceHandler',
+        // 'App\Services\Definitions\StoreNewTaskService' => 'App\Services\Definitions\StoreNewTaskHandler',
     ],
 ];
 ```
-
-> Note: Currently, you have to map your services/handlers in the provided config, or override the service provider and call the ```getHandlers()``` method. Using that method, you return the mapping array however you would like. In the near future, the package will assume a naming convention and do this automatically, leaving you the option to handle the mapping manually if you wish.
 
 ## Usage
 Once the package is installed and the config is copied, you can begin generating your Service Definitions and Handlers.
 To generate a Service Definition and Handler, run:
 
 ```bash
-php artisan make:service StoreNewTaskService
+php artisan make:service StoreNewTask
 ```
 
-This will create a 'StoreNewTaskService' Definition class and a 'StoreNewTaskServiceHandler' Handler class according to the namespaces you set in the servicehandler.php config file.
+Based on the configuration options above, this will create a 'StoreNewTaskService' Definition class and a 'StoreNewTaskHandler' Handler class.
 
-Next, in the config file, you can map the Service to the Task. See example below:
+> Note, if you decide not to use the 'autoload' functionality, in your config file, you can map the Service Definition to the Handler. See example below:
 ```php
     'handlers' => [
-        'App\Services\Definitions\StoreNewTaskService' => 'App\Services\Handlers\StoreNewTaskServiceHandler',
+        'App\Services\Definitions\StoreNewTaskService' => 'App\Services\Handlers\StoreNewTaskHandler',
     ],
 ```
-
-As mentioned, alternatively, you could extend the base ServiceHandlerServiceProvider and using the ```getHandlers()``` method, return the mapping of Service Definitions to Service Handlers.
+> If you prefer to autoload your services, be sure 'autoload' is set to true in the servicehandler configuration file. (This is the default)
 
 Example Service Definition class:
 
@@ -139,17 +183,17 @@ Example Service Definition class:
 // Service Definition Class
 namespace App\Services\Definitions;
 
-class StoreItemService
+class StoreNewTaskService
 {
     /**
-     * The parameters for building a new Item.
+     * The parameters for building a new Task.
      *
      * @var array
      */
     public $params;
 
     /**
-     * Construct a new StoreItemService.
+     * Construct a new StoreNewTaskService.
      *
      * @param  array  $params
      */
@@ -200,36 +244,36 @@ As in the example above, simply pass any necessary data to your service definiti
 ```php
 namespace App\Services\Handlers;
 
-use App\Models\Item;
-use App\Services\Definitions\StoreItemService;
+use App\Models\Task;
+use App\Services\Definitions\StoreNewTaskService;
 
-class StoreItemServiceHandler
+class StoreNewTaskHandler
 {
     /**
      * The model.
      *
-     * @var \App\Models\Item
+     * @var \App\Models\Task
      */
     public $model;
 
     /**
-     * Construct anew StoreItemServiceHandler.
+     * Construct anew StoreNewTaskHandler.
      *
-     * @param  \App\Models\Item $item
+     * @param  \App\Models\Task $task
      */
-    public function __construct(Item $item)
+    public function __construct(Task $task)
     {
-        $this->model = $item;
+        $this->model = $task;
     }
 
     /**
-     * Handle the storing of a new item.
+     * Handle the storing of a new task.
      *
-     * @param  \App\Services\Definition\StoreItemService  $service
+     * @param  \App\Services\Definition\StoreNewTaskService  $service
      *
-     * @return \App\Models\Item
+     * @return \App\Models\Task
      */
-    public function handle(StoreItemService $service)
+    public function handle(StoreNewTaskService $service)
     {
         return $this->model->create($service->params);
     }

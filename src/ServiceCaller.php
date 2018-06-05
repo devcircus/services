@@ -2,7 +2,6 @@
 
 namespace BrightComponents\Service;
 
-use Illuminate\Pipeline\Pipeline;
 use Illuminate\Contracts\Container\Container;
 
 class ServiceCaller
@@ -15,21 +14,7 @@ class ServiceCaller
     protected $container;
 
     /**
-     * The pipeline instance for the bus.
-     *
-     * @var \Illuminate\Pipeline\Pipeline
-     */
-    protected $pipeline;
-
-    /**
-     * The pipes to send commands through before dispatching.
-     *
-     * @var array
-     */
-    protected $pipes = [];
-
-    /**
-     * The command to handler mapping for non-self-handling events.
+     * The command to handler mapping for non-self-handling services.
      *
      * @var array
      */
@@ -39,11 +24,12 @@ class ServiceCaller
      * Create a new service caller instance.
      *
      * @param  \Illuminate\Contracts\Container\Container  $container
+     * @param  \BrightComponents\Service\ServiceTranslator $translator
      */
-    public function __construct(Container $container)
+    public function __construct(Container $container, ServiceTranslator $translator)
     {
         $this->container = $container;
-        $this->pipeline = new Pipeline($container);
+        $this->translator = $translator;
     }
 
     /**
@@ -65,19 +51,7 @@ class ServiceCaller
             };
         }
 
-        return $this->pipeline->send($service)->through($this->pipes)->then($callback);
-    }
-
-    /**
-     * Determine if the given service has a defined stand-alone handler.
-     *
-     * @param  mixed  $service
-     *
-     * @return bool
-     */
-    public function hasServiceHandler($service)
-    {
-        return array_key_exists(get_class($service), $this->handlers);
+        return call_user_func($callback, $service);
     }
 
     /**
@@ -89,25 +63,11 @@ class ServiceCaller
      */
     public function getServiceHandler($service)
     {
-        if ($this->hasServiceHandler($service)) {
+        if ($this->hasHandler($service)) {
             return $this->container->make($this->handlers[get_class($service)]);
         }
 
         return false;
-    }
-
-    /**
-     * Set the pipes through which services should be piped before calling.
-     *
-     * @param  array  $pipes
-     *
-     * @return $this
-     */
-    public function pipeThrough(array $pipes)
-    {
-        $this->pipes = $pipes;
-
-        return $this;
     }
 
     /**
@@ -122,5 +82,17 @@ class ServiceCaller
         $this->handlers = array_merge($this->handlers, $map);
 
         return $this;
+    }
+
+    /**
+     * Determine if the given service has a handler defined.
+     *
+     * @param  mixed  $service
+     *
+     * @return bool
+     */
+    private function hasHandler($service)
+    {
+        return array_key_exists(get_class($service), $this->handlers);
     }
 }
