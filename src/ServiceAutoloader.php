@@ -54,8 +54,10 @@ class ServiceAutoloader
             if (count($this->finder)) {
                 foreach ($this->finder as $file) {
                     $definition = $this->namespace.'\\'.$this->filesystem->name($file->getRealPath());
-                    $handler = $this->translator->convertDefinitionToHandler($definition);
-                    $this->associateHandlerWithDefinition($definition, $handler);
+                    if (! method_exists($definition, 'run')) {
+                        $handler = $this->translator->convertDefinitionToHandler($definition);
+                        $this->associateHandlerWithDefinition($definition, $handler);
+                    }
                 }
             }
         }
