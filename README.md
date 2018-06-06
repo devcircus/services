@@ -58,7 +58,7 @@ class Store extends Controller
 
 ```
 
-My controllers simply defer to a Service to handle the dirty work, then, using [Responders](https://github.com/bright-components/responders), a responder is responsible for handling the response. A very clean approach.
+My controllers simply defer to a Service to handle the dirty work, then, using [Responders](https://github.com/bright-components/responders), the response is sent. A very clean approach.
 
 ## Installation
 
@@ -67,7 +67,7 @@ You can install the package via composer:
 ```bash
 composer require bright-components/servicehandler
 ```
-> Note: Until version 1.0 is released, major features and bug fixes may be fixed between minor versions. To maintain stability, I recommend a restraint in the form of "^0.3.0". This would take the form of:
+> Note: Until version 1.0 is released, major features and bug fixes may be added between minor versions. To maintain stability, I recommend a restraint in the form of "^0.3.0". This would take the form of:
 ```bash
 composer require "bright-components/servicehandler:^0.3.0"
 ```
