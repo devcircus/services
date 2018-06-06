@@ -4,6 +4,7 @@ namespace BrightComponents\Service\Commands;
 
 use Illuminate\Support\Str;
 use Illuminate\Console\GeneratorCommand;
+use Symfony\Component\Console\Input\InputOption;
 
 class ServiceMakeCommand extends GeneratorCommand
 {
@@ -37,7 +38,9 @@ class ServiceMakeCommand extends GeneratorCommand
             return;
         }
 
-        $this->createHandler();
+        if (! $this->option('self')) {
+            $this->createHandler();
+        }
     }
 
     /**
@@ -59,7 +62,7 @@ class ServiceMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__.'/stubs/service.stub';
+        return $this->option('self') ? __DIR__.'/stubs/service_self.stub' : __DIR__.'/stubs/service.stub';
     }
 
     /**
@@ -71,6 +74,10 @@ class ServiceMakeCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
+        if ($this->option('self')) {
+            return $rootNamespace.'\\'.config('servicehandler.namespaces.self_handling');
+        }
+
         return $rootNamespace.'\\'.config('servicehandler.namespaces.root').'\\'.config('servicehandler.namespaces.definitions');
     }
 
@@ -82,5 +89,17 @@ class ServiceMakeCommand extends GeneratorCommand
     protected function getNameInput()
     {
         return trim($this->argument('name')).config('servicehandler.service_suffix', '');
+    }
+
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        return [
+            ['self', null, InputOption::VALUE_NONE, 'Indicates that service is self-handling.'],
+        ];
     }
 }

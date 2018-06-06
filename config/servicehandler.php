@@ -22,9 +22,15 @@ return [
      */
 
     'namespaces' => [
+        // The root namespace is in relation to the application root namespace, usually 'App'.
         'root' => 'Services',
+
+        // The definitions and handlers namespace is in relation to the root Service namespace, listed above.
         'definitions' => 'Definitions',
         'handlers' => 'Handlers',
+
+        // The self-handling services namespace is a direct child of the application root namespace, usually 'App'.
+        'self_handling' =>'Services',
     ],
 
     /*

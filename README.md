@@ -65,7 +65,11 @@ My controllers simply defer to a Service to handle the dirty work, then, using [
 You can install the package via composer:
 
 ```bash
-composer require bright-components/service
+composer require bright-components/servicehandler
+```
+> Note: Until version 1.0 is released, major features and bug fixes may be fixed between minor versions. To maintain stability, I recommend a restraint in the form of "^0.3.0". This would take the form of:
+```bash
+composer require "bright-components/servicehandler:^0.3.0"
 ```
 
 In Laravel > 5.6.0, the ServiceProvider will be automatically detected and registered.
@@ -161,7 +165,7 @@ return [
 
 ## Usage
 Once the package is installed and the config is copied, you can begin generating your Service Definitions and Handlers.
-To generate a Service Definition and Handler, run:
+**To generate a Service Definition and Handler, run:**
 
 ```bash
 php artisan make:service StoreNewTask
@@ -176,6 +180,13 @@ Based on the configuration options above, this will create a 'StoreNewTaskServic
     ],
 ```
 > If you prefer to autoload your services, be sure 'autoload' is set to true in the servicehandler configuration file. (This is the default)
+
+**To generate a single, self-handling service with a "run" method, add the --self flag. Example:**
+```bash
+php artisan make:service StoreNewTask --self
+```
+
+This will generate one service class based on your namespace option in the servicehandler configuration. The "run" method on this class will be called when you call a service.
 
 Example Service Definition class:
 
