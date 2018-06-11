@@ -24,3 +24,7 @@ All notable changes to lara-service will be documented in this file
 - Removed helpers that had a dependency on Illuminate\Foundation.
 - Rename 'service_suffix' to 'definition_suffix' for clarity.
 - Refactored the Service Translator
+
+## 0.4.1 - 2018-06-11
+
+- Fix config only working in console.
