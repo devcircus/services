@@ -2,9 +2,11 @@
 
 namespace BrightComponents\Service\Commands;
 
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
+use BrightComponents\Service\Exceptions\InvalidNamespaceException;
 
 class ServiceMakeCommand extends GeneratorCommand
 {
@@ -30,6 +32,13 @@ class ServiceMakeCommand extends GeneratorCommand
     protected $type = 'Service';
 
     /**
+     * The value of the command input after formatting.
+     *
+     * @var string
+     */
+    protected $inputValue;
+
+    /**
      * Execute the console command.
      */
     public function handle()
@@ -41,6 +50,10 @@ class ServiceMakeCommand extends GeneratorCommand
         if (! $this->option('self')) {
             $this->createHandler();
         }
+
+        if (Config::get('servicehandler.cache')) {
+            Cache::forget(Config::get('servicehandler.cache_key'));
+        }
     }
 
     /**
@@ -48,10 +61,8 @@ class ServiceMakeCommand extends GeneratorCommand
      */
     protected function createHandler()
     {
-        $handler = Str::studly(class_basename($this->argument('name')));
-
         $this->call('make:handler', [
-            'name' => $handler.config('servicehandler.handler_suffix', ''),
+            'name' => $this->inputValue.Config::get('servicehandler.handler_suffix'),
         ]);
     }
 
@@ -74,11 +85,25 @@ class ServiceMakeCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        if ($this->option('self')) {
-            return $rootNamespace.'\\'.config('servicehandler.namespaces.self_handling');
+        $serviceRootNamespace = Config::get('servicehandler.namespaces.root');
+
+        if (! $serviceRootNamespace) {
+            throw InvalidNamespaceException::missingServiceRootNamespace();
         }
 
-        return $rootNamespace.'\\'.config('servicehandler.namespaces.root').'\\'.config('servicehandler.namespaces.definitions');
+        if ($this->option('self')) {
+            if ($selfHandlingNamespace = Config::get('servicehandler.namespaces.self_handling')) {
+                return $rootNamespace.'\\'.$serviceRootNamespace.'\\'.$selfHandlingNamespace;
+            }
+
+            return $rootNamespace.'\\'.$serviceRootNamespace;
+        }
+
+        if ($definitionNamespace = Config::get('servicehandler.namespaces.definitions')) {
+            return $rootNamespace.'\\'.$serviceRootNamespace.'\\'.$definitionNamespace;
+        }
+
+        return $rootNamespace.'\\'.$serviceRootNamespace;
     }
 
     /**
@@ -88,7 +113,18 @@ class ServiceMakeCommand extends GeneratorCommand
      */
     protected function getNameInput()
     {
-        return trim($this->argument('name')).config('servicehandler.service_suffix', '');
+        $input = $input = studly_case(trim($this->argument('name')));
+        $suffix = Config::get('servicehandler.definition_suffix');
+
+        if (Config::get('servicehandler.override_duplicate_suffix')) {
+            if ($suffix && ends_with($input, $suffix)) {
+                $input = str_replace_last($suffix, '', $input);
+            }
+        }
+
+        $this->inputValue = $input;
+
+        return $input.$suffix;
     }
 
     /**

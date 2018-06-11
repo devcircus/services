@@ -2,6 +2,7 @@
 
 namespace BrightComponents\Service;
 
+use Illuminate\Support\Facades\Config;
 use BrightComponents\Service\Commands\HandlerMakeCommand;
 use BrightComponents\Service\Commands\ServiceMakeCommand;
 use BrightComponents\Service\Contracts\ServiceCallerContract;
@@ -29,7 +30,14 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->app->singleton(ServiceCaller::class, function ($app) {
-            return new ServiceCaller($app, new ServiceTranslator);
+            return new ServiceCaller($app);
+        });
+
+        $this->app->singleton(ServiceTranslator::class, function ($app) {
+            $translator = new ServiceTranslator();
+            $translator::initialize($appNamespace = $app->getNamespace());
+
+            return $translator;
         });
 
         $this->app->alias(
@@ -43,16 +51,20 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
      */
     public function boot()
     {
-        $this->publishes([
-            __DIR__.'/../config/servicehandler.php' => config_path('servicehandler.php'),
-        ]);
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../config/servicehandler.php' => config_path('servicehandler.php'),
+            ]);
+
+            $this->mergeConfigFrom(__DIR__.'/../config/servicehandler.php', 'servicehandler');
+        }
 
         $this->commands([
             ServiceMakeCommand::class,
             HandlerMakeCommand::class,
         ]);
 
-        if (config('servicehandler.autoload')) {
+        if (Config::get('servicehandler.autoload')) {
             $this->loadServices();
         }
 
@@ -70,6 +82,7 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
             ServiceCaller::class,
             ServiceCallerContract::class,
             ServiceAutoloader::class,
+            ServiceTranslator::class,
         ];
     }
 
@@ -90,7 +103,7 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
      */
     public function getHandlers()
     {
-        $configHandlers = config('servicehandler.handlers');
+        $configHandlers = Config::get('servicehandler.handlers');
         if ($configHandlers && count($configHandlers)) {
             return $configHandlers;
         }
