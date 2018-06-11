@@ -55,9 +55,9 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
             $this->publishes([
                 __DIR__.'/../config/servicehandler.php' => config_path('servicehandler.php'),
             ]);
-
-            $this->mergeConfigFrom(__DIR__.'/../config/servicehandler.php', 'servicehandler');
         }
+
+        $this->mergeConfigFrom(__DIR__.'/../config/servicehandler.php', 'servicehandler');
 
         $this->commands([
             ServiceMakeCommand::class,
