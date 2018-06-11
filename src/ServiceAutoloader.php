@@ -2,14 +2,13 @@
 
 namespace BrightComponents\Service;
 
+use Illuminate\Support\Facades\File;
 use Symfony\Component\Finder\Finder;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 
 class ServiceAutoloader
 {
-    use DetectsApplicationNamespace;
-
     /**
      * The service definition to handler mapping.
      *
@@ -18,54 +17,72 @@ class ServiceAutoloader
     private $handlers = [];
 
     /**
-     * The namespace for service definitions.
+     * The Service Translator class.
      *
-     * @var string
+     * @var \BrightComponents\Service\ServiceTranslator
      */
-    private $namespace;
+    protected $translator;
 
     /**
      * Construct a new ServiceAutoloader.
      *
-     * @param  \Symfony\Component\Finder\Finder  $finder
-     * @param  \Illuminate\Filesystem\Filesystem  $filesystem
      * @param  \BrightCompnonents\Service\ServiceTranslator  $translator
      */
-    public function __construct(Finder $finder, Filesystem $filesystem, ServiceTranslator $translator)
+    public function __construct(ServiceTranslator $translator)
     {
-        $this->finder = $finder;
-        $this->filesystem = $filesystem;
         $this->translator = $translator;
     }
 
     /**
-     * Load services from the service namespace into the handlers array.
+     * Map services from the configured namespace to handlers and load into the handlers array.
      *
      * @return array
      */
     public function load()
     {
-        $this->namespace = $this->getAppNamespace().config('servicehandler.namespaces.root', 'Services').'\\'.config('servicehandler.namespaces.definitions', 'Definitions');
-        $directory = $this->translator->getServiceDefinitionsDirectory($this->namespace);
+        if (File::exists($directory = $this->translator::$definitions)) {
+            if (Config::get('servicehandler.cache')) {
+                return Cache::rememberForever(Config::get('servicehandler.cache_key'), function () use ($directory) {
+                    return $this->loadServicesFromDirectory($directory);
+                });
+            }
 
-        if ($this->filesystem->exists($directory)) {
-            $this->finder->files()->in($directory);
+            return $this->loadServicesFromDirectory($directory);
+        }
 
-            if (count($this->finder)) {
-                foreach ($this->finder as $file) {
-                    $definition = $this->namespace.'\\'.$this->filesystem->name($file->getRealPath());
-                    if (! method_exists($definition, 'run')) {
-                        $handler = $this->translator->convertDefinitionToHandler($definition);
-                        $this->associateHandlerWithDefinition($definition, $handler);
-                    }
-                }
+        return [];
+    }
+
+    /**
+     * Cyle through the Service definitions directory, finding all Definition classes. Translate each Definition class
+     * into a Handler class, then add the Definition => Handler to the handlers property of this Service Provider.
+     *
+     * @param  string  $directory
+     *
+     * @return array
+     */
+    protected function loadServicesFromDirectory($directory)
+    {
+        foreach (Finder::create()->in($directory)->name('*'.$this->translator::$definitionSuffix.'.php')->files() as $file) {
+            $definition = $this->translator->getDefinitionClass($file);
+            if (! method_exists($definition, 'run')) {
+                $handler = $this->translator->getHandlerClass($definition);
+                $this->associateHandlerWithDefinition($definition, $handler);
             }
         }
 
         return $this->handlers;
     }
 
-    private function associateHandlerWithDefinition($definitionPath, $handlerPath)
+    /**
+     * Set the key/value pair in the handlers array.
+     *
+     * @param  string  $definitionPath
+     * @param  string  $handlerPath
+     *
+     * @return string
+     */
+    protected function associateHandlerWithDefinition($definitionPath, $handlerPath)
     {
         return $this->handlers[$definitionPath] = $handlerPath;
     }

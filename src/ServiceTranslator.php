@@ -2,148 +2,249 @@
 
 namespace BrightComponents\Service;
 
-use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Support\Facades\Config;
+use BrightComponents\Service\Exceptions\InvalidSuffixException;
+use BrightComponents\Service\Exceptions\MissingHandlerException;
+use BrightComponents\Service\Exceptions\InvalidNamespaceException;
 
 class ServiceTranslator
 {
-    use DetectsApplicationNamespace;
+    /**
+     * The FQCN of the Service Definition class.
+     *
+     * @var string
+     */
+    public $definitionClass;
 
     /**
-     * Determine if a service can be translated to an existing handler.
+     * The Application root namespace.
      *
-     * @param  mixed  $service
-     *
-     * @return bool|string
+     * @var string
      */
-    public function canTranslate($service)
+    public static $appNamespace;
+
+    /**
+     * The Service root namespace.
+     *
+     * @var string
+     */
+    public static $serviceNamespace;
+
+    /**
+     * The Definition namespace.
+     *
+     * @var string
+     */
+    public static $definitionNamespace;
+
+    /**
+     * The Handler namespace.
+     *
+     * @var string
+     */
+    public static $handlerNamespace;
+
+    /**
+     * The Definition suffix.
+     *
+     * @var string
+     */
+    public static $definitionSuffix;
+
+    /**
+     * The Handler suffix.
+     *
+     * @var string
+     */
+    public static $handlerSuffix;
+
+    /**
+     * The Definition directory.
+     *
+     * @var string
+     */
+    public static $definitions;
+
+    /**
+     * Initialize the Translator with Service properties.
+     *
+     * @param  string  $namespace
+     */
+    public static function initialize($namespace)
     {
-        return $this->hasHandler($service);
+        static::setAppNamespace($namespace);
+        static::determineServiceProperties();
     }
 
     /**
-     * Determine if a handler exists for a service.
-     *
-     * @param  mixed  $class
-     *
-     * @return bool|string
-     */
-    public function hasHandler($class)
-    {
-        $handler = $this->getHandler($class);
-
-        return class_exists($handler) ? $handler : false;
-    }
-
-    /**
-     * Get the handler for a specific service class.
-     *
-     * @param  mixed  $class
+     * Determine the Application root namespace.
      *
      * @return string
      */
-    protected function getHandler($class)
+    private static function setAppNamespace($namespace)
     {
-        $definitionName = $this->parseDefintionClass($class);
-        $handlerName = $this->convertDefinitionToHandler($definitionName);
-
-        return $this->getHandlerPath($handlerName);
+        return self::$appNamespace = $namespace;
     }
 
     /**
-     * Parse the definition class name from the fully qualified class name.
+     * Call each method that determines the static properties.
+     */
+    private static function determineServiceProperties()
+    {
+        static::determineServiceRootNamespace();
+        static::determineDefinitionNamespace();
+        static::determineDefinitionSuffix();
+        static::determineHandlerNamespace();
+        static::determineHandlerSuffix();
+        static::determineDefinitionDirectory();
+    }
+
+    /**
+     * Determine the Service root namespace.
+     * ex. "App\Services".
      *
-     * @param  string  $class
+     * @throws \BrightComponents\Service\Exceptions\InvalidNamespaceException
      *
      * @return string
      */
-    private function parseDefintionClass($class)
+    private static function determineServiceRootNamespace()
     {
-        $classArray = explode('\\', get_class($class));
+        if (! $serviceNamespace = Config::get('servicehandler.namespaces.root')) {
+            throw InvalidNamespaceException::missingServiceNamespace();
+        }
 
-        return array_pop($classArray);
+        return self::$serviceNamespace = $serviceNamespace;
     }
 
     /**
-     * Convert the definition class name to handler class name.
+     * Determine the full Definition namespace.
+     * ex. "App\Services\Definitions".
+     *
+     * @return string
+     */
+    private static function determineDefinitionNamespace()
+    {
+        $definitionNamespace = Config::get('servicehandler.namespaces.definitions');
+
+        return self::$definitionNamespace = $definitionNamespace
+            ? self::$appNamespace.self::$serviceNamespace.'\\'.$definitionNamespace
+            : self::$appNamespace.self::$serviceNamespace;
+    }
+
+    /**
+     * Determine the full Handler namespace.
+     * ex. "App\Services\Handlers".
+     *
+     * @return string
+     */
+    private static function determineHandlerNamespace()
+    {
+        $handlerNamespace = Config::get('servicehandler.namespaces.handlers');
+
+        return self::$handlerNamespace = $handlerNamespace
+            ? self::$appNamespace.self::$serviceNamespace.'\\'.$handlerNamespace
+            : self::$appNamespace.self::$serviceNamespace;
+    }
+
+    /**
+     * Determine the Definition suffix.
+     * ex. "Definition".
+     *
+     * @throws \BrightComponents\Service\Exceptions\InvalidSuffixException
+     *
+     * @return string
+     */
+    private static function determineDefinitionSuffix()
+    {
+        if (! $suffix = Config::get('servicehandler.definition_suffix')) {
+            throw InvalidSuffixException::missingServiceDefinitionSuffix();
+        }
+
+        return self::$definitionSuffix = $suffix;
+    }
+
+    /**
+     * Determine the Handler suffix.
+     * ex. "Handler".
+     *
+     * @return string
+     */
+    private static function determineHandlerSuffix()
+    {
+        return self::$handlerSuffix = Config::get('servicehandler.handler_suffix');
+    }
+
+    /**
+     * Determine the Definition directory.
+     *
+     * @return string
+     */
+    private static function determineDefinitionDirectory()
+    {
+        return self::$definitions = __DIR__.'/../../../../'.str_replace('\\', '/', lcfirst(self::$definitionNamespace));
+    }
+
+    /**
+     * Get the FQCN of the Service Definition.
+     * ex. "App\Services\Definitions\CreatePostService".
+     *
+     * @param  \SplFileInfo  $file
+     *
+     * @return string
+     */
+    public function getDefinitionClass($file)
+    {
+        $relativePath = $this->getRelativeNamespace($file);
+        $basename = explode('.', $file->getBasename())[0];
+
+        return $relativePath ? $this::$definitionNamespace.'\\'.$relativePath.'\\'.$basename : $this::$definitionNamespace.'\\'.$basename;
+    }
+
+    /**
+     * Get the FQCN of the Service Handler.
+     * ex. "App\Services\Handlers\CreatePostHandler".
      *
      * @param  string  $definition
      *
      * @return string
      */
-    public function convertDefinitionToHandler($definition)
+    public function getHandlerClass($definition)
     {
-        $definition = class_basename($definition);
-        $suffix = $this->getDefinitionSuffix();
+        $definitionBasename = $this->getDefinitionBasename($definition);
+        $handlerBasename = str_replace_last($this::$definitionSuffix, $this::$handlerSuffix, $definitionBasename);
+        $handler = str_replace_first($this::$definitionNamespace, $this::$handlerNamespace, $definition);
+        $handler = str_replace_last($definitionBasename, $handlerBasename, $handler);
 
-        if ($suffix && ends_with($definition, $suffix)) {
-            $definition = str_replace_last($suffix, '', $definition);
+        if (! class_exists($handler)) {
+            throw MissingHandlerException::unableToLocateHandler($handler);
         }
 
-        return $this->getAppNamespace()
-            .config('servicehandler.namespaces.root', 'Services')
-            .'\\'.config('servicehandler.namespaces.handlers', 'Handlers')
-            .'\\'.str_finish($definition, $this->getHandlerSuffix());
+        return $handler;
     }
 
     /**
-     * Get the namespace for service definitions.
+     * Get the Definition base name.
+     * ex. "CreatePostService".
+     *
+     * @param  string  $definition  The FQCN of the service definition
      *
      * @return string
      */
-    public function getServiceDefinitionsNamespace()
+    private function getDefinitionBasename($definition)
     {
-        return $this->getAppNamespace().config('servicehandler.namespaces.root', 'Services').'\\'.config('servicehandler.namespaces.definitions', 'Definitions');
+        return class_basename($definition);
     }
 
     /**
-     * Get the directory for service definitions.
+     * Get the relative namespace.
+     * ex. "Models\Poste".
+     *
+     * @param  \SplFileInfo  $file
      *
      * @return string
      */
-    public function getServiceDefinitionsDirectory($namespace)
+    private function getRelativeNamespace($file)
     {
-        return __DIR__.'/../../../../'.str_replace('\\', '/', lcfirst($namespace));
-    }
-
-    /**
-     * Determine if a suffix has been defined for service handlers.
-     *
-     * @return bool
-     */
-    private function hasHandlerSuffix()
-    {
-        return null != $this->getHandlerSuffix();
-    }
-
-    /**
-     * Get the defined suffix for service handlers.
-     *
-     * @return string|null
-     */
-    private function getHandlerSuffix()
-    {
-        $configSuffix = config('servicehandler.handler_suffix');
-
-        return trim(strlen($configSuffix)) > 0 ? $configSuffix : null;
-    }
-
-    /**
-     * Determine if service handlers have a defined class name prefix.
-     *
-     * @return bool
-     */
-    private function hasDefinitionSuffix()
-    {
-        return null != $this->getDefinitionSuffix();
-    }
-
-    /**
-     * Get the defined suffix for service definitions.
-     *
-     * @return string|null
-     */
-    private function getDefinitionSuffix()
-    {
-        return config('servicehandler.service_suffix');
+        return str_replace('/', '\\', $file->getRelativePath());
     }
 }

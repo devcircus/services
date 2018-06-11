@@ -2,7 +2,7 @@
 
 namespace BrightComponents\Service;
 
-use Illuminate\Contracts\Container\Container;
+use Illuminate\Container\Container;
 
 class ServiceCaller
 {
@@ -23,13 +23,11 @@ class ServiceCaller
     /**
      * Create a new service caller instance.
      *
-     * @param  \Illuminate\Contracts\Container\Container  $container
-     * @param  \BrightComponents\Service\ServiceTranslator $translator
+     * @param  \Illuminate\Container\Container  $container
      */
-    public function __construct(Container $container, ServiceTranslator $translator)
+    public function __construct(Container $container)
     {
         $this->container = $container;
-        $this->translator = $translator;
     }
 
     /**

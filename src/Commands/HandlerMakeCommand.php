@@ -2,7 +2,9 @@
 
 namespace BrightComponents\Service\Commands;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Console\GeneratorCommand;
+use BrightComponents\Service\Exceptions\InvalidNamespaceException;
 
 class HandlerMakeCommand extends GeneratorCommand
 {
@@ -46,6 +48,17 @@ class HandlerMakeCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace.'\\'.config('servicehandler.namespaces.root').'\\'.config('servicehandler.namespaces.handlers');
+        $serviceRootNamespace = Config::get('servicehandler.namespaces.root');
+
+        if (! $serviceRootNamespace) {
+            throw InvalidNamespaceException::missingServiceRootNamespace();
+        }
+
+        $handlerNamespace = Config::get('servicehandler.namespaces.handlers');
+        if ($handlerNamespace) {
+            return $rootNamespace.'\\'.$serviceRootNamespace.'\\'.$handlerNamespace;
+        }
+
+        return $rootNamespace.'\\'.$serviceRootNamespace;
     }
 }

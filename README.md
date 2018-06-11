@@ -8,7 +8,7 @@
 
 ![Bright Components](https://s3.us-east-2.amazonaws.com/bright-components/bc_large.png "Bright Components")
 
-BrightComponents' Service package scratches an itch I've had for a while. I routinely use single-action controllers with [Responder Classes](https://github.com/bright-components/responders), in combination with Service classes for gathering/manipulating data. In the past, I used Laravel's jobs(synchronous) for my services. There were times, though, that I needed to use jobs as well and didn't like that they were difficult to differentiate from my Service classes. So, drawing heavily from Laravel's job dispatching, I made 'dispatchable' Services. In doing so, I can now go to my 'Services' folder and see a clear picture of all of my application services. There is a one-to-one mapping of Service Definition and Service Handler and my controllers are super clean!
+BrightComponents' Service package scratches an itch I've had for a while. I routinely use single-action controllers with [Responder Classes](https://github.com/bright-components/responders), in combination with Service classes for gathering/manipulating data. In the past, I used Laravel's jobs(synchronous) for my services. There were times, though, that I needed to use jobs as well and didn't like that they were difficult to differentiate from my Service classes. So, drawing heavily from Laravel's job dispatching, I made 'dispatchable' Services. In doing so, I can now go to my 'Services' folder and see a clear picture of all of my application services. There is a one-to-one mapping of Service Definitions and Service Handlers and my controllers are super clean!
 
 Example:
 ```php
@@ -67,14 +67,14 @@ You can install the package via composer:
 ```bash
 composer require bright-components/servicehandler
 ```
-> Note: Until version 1.0 is released, major features and bug fixes may be added between minor versions. To maintain stability, I recommend a restraint in the form of "^0.3.0". This would take the form of:
+> Note: Until version 1.0 is released, major features and bug fixes may be added between minor versions. To maintain stability, I recommend a restraint in the form of "^0.4.0". This would take the form of:
 ```bash
-composer require "bright-components/servicehandler:^0.3.0"
+composer require "bright-components/servicehandler:^0.4.0"
 ```
 
 In Laravel > 5.6.0, the ServiceProvider will be automatically detected and registered.
 
-Then, run:
+Then, if you would like to change any of the configuration options, run:
 ```bash
 php artisan vendor:publish
 ```
@@ -93,8 +93,20 @@ return [
     | Autoload the services from the configured service namespace, instead of explicitly defining the mapping in
     | this configuration file or in the ServiceHandlerServiceProvider. This option is enabled by default.
     |
- */
+    */
     'autoload' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cache Service/Handler mapping
+    |--------------------------------------------------------------------------
+    |
+    | If you are autoloading the services located in your chosen namespace, you can choose to cache the resulting mapping.
+    | This allows your application to use the services without having to discover and parse services on each request.
+    |
+    */
+    'cache' => false,
+    'cache_key' => 'service_handlers',
 
     /*
     |--------------------------------------------------------------------------
@@ -104,15 +116,16 @@ return [
     | Set the namespaces for the Service classes and Handlers.
     |
     */
-
     'namespaces' => [
         // The root namespace is in relation to the application root namespace, usually 'App'.
         'root' => 'Services',
+
         // The definitions and handlers namespace is in relation to the root Service namespace, listed above.
         'definitions' => 'Definitions',
         'handlers' => 'Handlers',
+
         // The self-handling services namespace is a direct child of the application root namespace, usually 'App'.
-        'self_handling' =>'Services',
+        'self_handling' =>'',
     ],
 
     /*
@@ -120,20 +133,13 @@ return [
     | Suffixes
     |--------------------------------------------------------------------------
     |
-    | Set the suffix for the Service and Handler class names. Use an empty string for no suffix.
+    | Set the suffix for the Service Definition and Handler class names. Use an empty string for no suffix.
     |
-    | example: 'service_suffix' => 'Service'
+    | example: 'definition_suffix' => 'Service'
     |
-    | When running 'php artisan make:service Testing', the above configuration will yield a service definition class
-    | named 'TestingService'. However, if instead, your config looks like 'service_suffix' => '', the resulting
-    | service definition class will simply be named 'Testing'. The handler suffix config works the same way.
-    |
-    | **Note**
-    | If you incidentally run the command 'php artisan make:service TestingService' and you also have
-    | 'Service' set as your suffix, the package will detect this and not duplicate the suffix.
-    | You can override this behavior using the 'override_duplicate_suffix' config option.
-    |
-     */
+    | NOTE: If you choose to autoload your service/handler mapping (option above), you MUST choose a suffix for your definition
+    | classes. Otherwise, you will need to explicitly define your service/handler mapping using the 'handlers' array.
+    */
     'service_suffix' => 'Service',
     'handler_suffix' => 'Handler',
 
@@ -142,11 +148,11 @@ return [
     | Duplicate Suffixes
     |--------------------------------------------------------------------------
     |
-    | If you have a suffix set in the config and try to generate a Service that also includes the suffix,
+    | If you have a definition suffix set in the config and try to generate a Service that also includes the suffix,
     | the package will recognize this duplication and rename the Service to remove the extra suffix.
-    | This is the default behavior, to override and allow duplicate suffixes, change to false.
+    | This is the default behavior. To override and allow the duplication, change to false.
     |
-     */
+    */
     'override_duplicate_suffix' => true,
 
     /*
@@ -154,21 +160,17 @@ return [
     | Service / Handler mapping
     |--------------------------------------------------------------------------
     |
-    | Map Handlers to Services. By default, there is no need to map your services to handlers. Your services will
-    | be autoloaded from your services directory, according to the namespaces that have been provided above.
-    | However, if you disable service autoloading, you will need to explicitly map your handlers here
-    | or override the ServiceProvider and perform the service to handler mapping there instead.
+    | Map Handlers to Services
     |
     */
-
     'handlers' => [
-        // 'App\Services\Definitions\StoreNewTaskService' => 'App\Services\Definitions\StoreNewTaskHandler',
+        // 'App\Services\Definitions\StoreItemService' => 'App\Services\Definitions\StoreItemServiceHandler',
     ],
 ];
 ```
 
 ## Usage
-Once the package is installed and the config is copied, you can begin generating your Service Definitions and Handlers.
+Once the package is installed and the config is copied (optionally), you can begin generating your Service Definitions and Handlers.
 **To generate a Service Definition and Handler, run:**
 
 ```bash
@@ -177,20 +179,21 @@ php artisan make:service StoreNewTask
 
 Based on the configuration options above, this will create a 'StoreNewTaskService' Definition class and a 'StoreNewTaskHandler' Handler class.
 
-> Note, if you decide not to use the 'autoload' functionality, in your config file, you can map the Service Definition to the Handler. See example below:
+> Note, if you decide not to use the 'autoload' functionality, in your config file, you can explicitly map the Service Definition to the Handler. See example below:
 ```php
     'handlers' => [
         'App\Services\Definitions\StoreNewTaskService' => 'App\Services\Handlers\StoreNewTaskHandler',
     ],
 ```
 > If you prefer to autoload your services, be sure 'autoload' is set to true in the servicehandler configuration file. (This is the default)
+When autoloading your service/handler mapping, the 'definition_suffix' config option can NOT be empty.
 
 **To generate a single, self-handling service with a "run" method, add the --self flag. Example:**
 ```bash
 php artisan make:service StoreNewTask --self
 ```
 
-This will generate one service class based on your namespace option in the servicehandler configuration. The "run" method on this class will be called when you call a service.
+This will generate one service class based on your namespace option in the servicehandler configuration. The "run" method on this class will be executed when you 'call' a service.
 
 Example Service Definition class:
 
