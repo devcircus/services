@@ -2,7 +2,6 @@
 
 namespace BrightComponents\Service;
 
-use Illuminate\Support\Facades\File;
 use Symfony\Component\Finder\Finder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
@@ -40,7 +39,7 @@ class ServiceAutoloader
      */
     public function load()
     {
-        if (File::exists($directory = $this->translator::$definitions)) {
+        if (file_exists($directory = $this->translator::$definitions)) {
             if (Config::get('servicehandler.cache')) {
                 return Cache::rememberForever(Config::get('servicehandler.cache_key'), function () use ($directory) {
                     return $this->loadServicesFromDirectory($directory);
