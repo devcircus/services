@@ -32,15 +32,6 @@ interface ServiceCallerContract
     public function getServiceHandler($service);
 
     /**
-     * Set the pipes services should be piped through before calling.
-     *
-     * @param  array  $pipes
-     *
-     * @return $this
-     */
-    public function pipeThrough(array $pipes);
-
-    /**
      * Map a service to a handler.
      *
      * @param  array  $map

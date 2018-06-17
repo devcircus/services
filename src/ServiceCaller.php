@@ -14,6 +14,13 @@ class ServiceCaller
     protected $container;
 
     /**
+     * The service translator.
+     *
+     * @var \BrightComponents\Service\ServiceTranslator
+     */
+    protected $translator;
+
+    /**
      * The command to handler mapping for non-self-handling services.
      *
      * @var array
@@ -25,9 +32,10 @@ class ServiceCaller
      *
      * @param  \Illuminate\Container\Container  $container
      */
-    public function __construct(Container $container)
+    public function __construct(Container $container, ServiceTranslator $translator)
     {
         $this->container = $container;
+        $this->translator = $translator;
     }
 
     /**
@@ -61,8 +69,11 @@ class ServiceCaller
      */
     public function getServiceHandler($service)
     {
-        if ($this->hasHandler($service)) {
+        if ($this->hasMappedHandler($service)) {
             return $this->container->make($this->handlers[get_class($service)]);
+        }
+        if ($handler = this->getTranslatableHandler($service)) {
+            return $this->container->make($handler);
         }
 
         return false;
@@ -89,8 +100,24 @@ class ServiceCaller
      *
      * @return bool
      */
-    private function hasHandler($service)
+    private function hasMappedHandler($service)
     {
         return array_key_exists(get_class($service), $this->handlers);
+    }
+
+    /**
+     * Translate the given service to a handler..
+     *
+     * @param  mixed  $service
+     *
+     * @return mixed
+     */
+    private function getTranslatableHandler($service)
+    {
+        if ($handler = $this->translator->translateServiceToHandler($service)) {
+            return $handler;
+        }
+
+        return false;
     }
 }

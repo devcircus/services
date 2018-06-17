@@ -29,20 +29,19 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(ServiceCaller::class, function ($app) {
-            return new ServiceCaller($app);
+        $this->app->singleton(ServiceTranslator::class, function ($app) {
+            return new ServiceTranslator($app);
         });
 
-        $this->app->singleton(ServiceTranslator::class, function ($app) {
-            $translator = new ServiceTranslator();
-            $translator::initialize($appNamespace = $app->getNamespace());
+        $this->app->singleton(ServiceCaller::class, function ($app) {
+            $translator = $app->make(ServiceTranslator::class);
 
-            return $translator;
+            return new ServiceCaller($app, $translator);
         });
 
         $this->app->alias(
             ServiceCaller::class,
-            ServiceCallerContract::class
+            ServiceCallerContract::class,
         );
     }
 
@@ -63,10 +62,6 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
             ServiceMakeCommand::class,
             HandlerMakeCommand::class,
         ]);
-
-        if (Config::get('servicehandler.autoload')) {
-            $this->loadServices();
-        }
 
         $this->mapHandlers();
     }
@@ -109,10 +104,5 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
         }
 
         return $this->handlers;
-    }
-
-    private function loadServices()
-    {
-        $this->handlers = $this->app->make(ServiceAutoloader::class)->load();
     }
 }
