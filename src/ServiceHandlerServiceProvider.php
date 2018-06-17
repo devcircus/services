@@ -41,7 +41,7 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
 
         $this->app->alias(
             ServiceCaller::class,
-            ServiceCallerContract::class,
+            ServiceCallerContract::class
         );
     }
 
