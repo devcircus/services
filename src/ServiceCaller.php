@@ -72,7 +72,7 @@ class ServiceCaller
         if ($this->hasMappedHandler($service)) {
             return $this->container->make($this->handlers[get_class($service)]);
         }
-        if ($handler = this->getTranslatableHandler($service)) {
+        if ($handler = $this->getTranslatableHandler($service)) {
             return $this->container->make($handler);
         }
 
