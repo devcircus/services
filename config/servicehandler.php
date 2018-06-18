@@ -17,7 +17,7 @@ return [
         'definitions' => 'Definitions',
         'handlers' => 'Handlers',
 
-        // The self-handling services namespace is a direct child of the application root namespace, usually 'App'.
+        // The self-handling services namespace is in relation to the root Service namespace, listed above.
         'self_handling' =>'',
     ],
 
