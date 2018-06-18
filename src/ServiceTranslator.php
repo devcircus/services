@@ -64,7 +64,14 @@ class ServiceTranslator implements ServiceTranslatorContract
         $this->handlerSuffix = $handlerSuffix;
     }
 
-    public function translateServiceToHandler($service) : string
+    /**
+     * Translate the given service definition to the matching handler.
+     *
+     * @param  mixed  $service
+     *
+     * @return string
+     */
+    public function translateServiceToHandler($service): string
     {
         $definitionClass = $this->getDefinitionClass($service);
         $rootNamespace = $this->getRootNamespace(get_class($service));
@@ -74,14 +81,28 @@ class ServiceTranslator implements ServiceTranslatorContract
         return $fullNamespace.'\\'.$handlerClass;
     }
 
-    private function getDefinitionClass($service) : string
+    /**
+     * Get the definition class basename from the service definition class.
+     *
+     * @param  mixed  $service
+     *
+     * @return string
+     */
+    private function getDefinitionClass($service): string
     {
         $classArray = explode('\\', get_class($service));
 
         return array_pop($classArray);
     }
 
-    private function convertDefinitionClassToHandlerClass($definitionClass) : string
+    /**
+     * Convert the given definition class basename to the matching handler basename.
+     *
+     * @param  string  $definitionClass
+     *
+     * @return string
+     */
+    private function convertDefinitionClassToHandlerClass($definitionClass): string
     {
         if ($definitionSuffix = $this->definitionSuffix) {
             return str_replace($definitionSuffix, $this->handlerSuffix, $definitionClass);
@@ -90,7 +111,14 @@ class ServiceTranslator implements ServiceTranslatorContract
         return $definitionClass.$this->handlerSuffix;
     }
 
-    private function getRootNamespace($service) : string
+    /**
+     * Get the root namespace for the application.
+     *
+     * @param  string  $service
+     *
+     * @return string
+     */
+    private function getRootNamespace($service): string
     {
         $position = strpos($service, $this->serviceNamespace.'\\'.$this->definitionNamespace);
         if (false === $position) {
@@ -100,7 +128,14 @@ class ServiceTranslator implements ServiceTranslatorContract
         }
     }
 
-    private function getFullHandlerNamespace($rootNamespace) : string
+    /**
+     * Get the full handler namespace.
+     *
+     * @param  string  $rootNamespace
+     *
+     * @return string
+     */
+    private function getFullHandlerNamespace($rootNamespace): string
     {
         return $this->handlerNamespace ? $rootNamespace.$this->serviceNamespace.'\\'.$this->handlerNamespace : $rootNamespace.$this->serviceNamespace;
     }
