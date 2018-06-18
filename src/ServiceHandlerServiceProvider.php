@@ -2,11 +2,11 @@
 
 namespace BrightComponents\Service;
 
-use Illuminate\Support\Facades\Config;
 use BrightComponents\Service\Commands\HandlerMakeCommand;
 use BrightComponents\Service\Commands\ServiceMakeCommand;
 use BrightComponents\Service\Contracts\ServiceCallerContract;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use BrightComponents\Service\Contracts\ServiceTranslatorContract;
 
 class ServiceHandlerServiceProvider extends BaseServiceProvider
 {
@@ -30,7 +30,13 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->app->singleton(ServiceTranslator::class, function ($app) {
-            return new ServiceTranslator($app);
+            return new ServiceTranslator(
+                config('servicehandler.namespaces.root'),
+                config('servicehandler.namespaces.definitions'),
+                config('servicehandler.namespaces.handlers'),
+                config('servicehandler.definition_suffix'),
+                config('servicehandler.handler_suffix')
+            );
         });
 
         $this->app->singleton(ServiceCaller::class, function ($app) {
@@ -42,6 +48,11 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
         $this->app->alias(
             ServiceCaller::class,
             ServiceCallerContract::class
+        );
+
+        $this->app->alias(
+            ServiceTranslator::class,
+            ServiceTranslatorContract::class
         );
     }
 
@@ -76,15 +87,15 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
         return [
             ServiceCaller::class,
             ServiceCallerContract::class,
-            ServiceAutoloader::class,
             ServiceTranslator::class,
+            ServiceTranslatorContract::class,
         ];
     }
 
     /**
      * Map service handlers to services.
      *
-     * @return \App\Foundation\Components\ServiceCaller
+     * @return \BrightComponents\Service\ServiceCaller
      */
     public function mapHandlers()
     {
@@ -98,7 +109,7 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
      */
     public function getHandlers()
     {
-        $configHandlers = Config::get('servicehandler.handlers');
+        $configHandlers = config('servicehandler.handlers');
         if ($configHandlers && count($configHandlers)) {
             return $configHandlers;
         }

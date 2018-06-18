@@ -2,7 +2,7 @@
 
 namespace BrightComponents\Service;
 
-use Illuminate\Container\Container;
+use Illuminate\Contracts\Container\Container;
 
 class ServiceCaller
 {
@@ -21,7 +21,7 @@ class ServiceCaller
     protected $translator;
 
     /**
-     * The command to handler mapping for non-self-handling services.
+     * The command-to-handler mapping for non-self-handling services.
      *
      * @var array
      */
@@ -30,7 +30,7 @@ class ServiceCaller
     /**
      * Create a new service caller instance.
      *
-     * @param  \Illuminate\Container\Container  $container
+     * @param  \Illuminate\Contracts\Container\Container  $container
      */
     public function __construct(Container $container, ServiceTranslator $translator)
     {

@@ -67,9 +67,9 @@ You can install the package via composer:
 ```bash
 composer require bright-components/servicehandler
 ```
-> Note: Until version 1.0 is released, major features and bug fixes may be added between minor versions. To maintain stability, I recommend a restraint in the form of "^0.4.0". This would take the form of:
+> Note: Until version 1.0 is released, major features and bug fixes may be added between minor versions. To maintain stability, I recommend a restraint in the form of "^0.5.0". This would take the form of:
 ```bash
-composer require "bright-components/servicehandler:^0.4.0"
+composer require "bright-components/servicehandler:^0.5.0"
 ```
 
 In Laravel > 5.6.0, the ServiceProvider will be automatically detected and registered.
@@ -85,29 +85,6 @@ See the configuration file below, for all options available:
 
 ```php
 return [
-    /*
-    |--------------------------------------------------------------------------
-    | Autoload Services
-    |--------------------------------------------------------------------------
-    |
-    | Autoload the services from the configured service namespace, instead of explicitly defining the mapping in
-    | this configuration file or in the ServiceHandlerServiceProvider. This option is enabled by default.
-    |
-    */
-    'autoload' => true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Cache Service/Handler mapping
-    |--------------------------------------------------------------------------
-    |
-    | If you are autoloading the services located in your chosen namespace, you can choose to cache the resulting mapping.
-    | This allows your application to use the services without having to discover and parse services on each request.
-    |
-    */
-    'cache' => false,
-    'cache_key' => 'service_handlers',
-
     /*
     |--------------------------------------------------------------------------
     | Namespaces
@@ -137,10 +114,11 @@ return [
     |
     | example: 'definition_suffix' => 'Service'
     |
-    | NOTE: If you choose to autoload your service/handler mapping (option above), you MUST choose a suffix for your definition
-    | classes. Otherwise, you will need to explicitly define your service/handler mapping using the 'handlers' array.
+    | NOTE: If you choose to store your definitions and handlers in the same namespace, you will need to provide a suffix
+    | for, at least, either the definition or the handler. If not, the handler will not be created, due to the fact
+    | that the make command will attempt to create two files in the same namespace with the same exact name.
     */
-    'service_suffix' => 'Service',
+    'definition_suffix' => 'Service',
     'handler_suffix' => 'Handler',
 
     /*
@@ -160,7 +138,10 @@ return [
     | Service / Handler mapping
     |--------------------------------------------------------------------------
     |
-    | Map Handlers to Services
+    | If you choose to utilize a namespace structure that can not be described by the configuration options above, you
+    | can explicitly map your service definitions to handlers by providing the fully qualified namespace of each.
+    | If there are name conflicts between services that have been explicitly mapped here and additional
+    | services that have been defined in the application, the mapped handlers will take precedence.
     |
     */
     'handlers' => [
@@ -179,14 +160,13 @@ php artisan make:service StoreNewTask
 
 Based on the configuration options above, this will create a 'StoreNewTaskService' Definition class and a 'StoreNewTaskHandler' Handler class.
 
-> Note, if you decide not to use the 'autoload' functionality, in your config file, you can explicitly map the Service Definition to the Handler. See example below:
+> Note, if you decide to use a namespace structure for your services, that can't be defined by the configuration options, you will need to explicitly define your service-to-handler mapping using the 'handlers' config option. See example below:
 ```php
     'handlers' => [
         'App\Services\Definitions\StoreNewTaskService' => 'App\Services\Handlers\StoreNewTaskHandler',
     ],
 ```
-> If you prefer to autoload your services, be sure 'autoload' is set to true in the servicehandler configuration file. (This is the default)
-When autoloading your service/handler mapping, the 'definition_suffix' config option can NOT be empty.
+> Otherwise, you can use the default settings, or customize the namespaces and suffixes in the configuration. Based on these settings, the service will be translated to a handler at runtime. If your definitions and handlers are in the same namespace, you will need to assign a suffix to, at least, either your definitions or handlers. If not, the generator will attempt to create two classes with the same name in the same namespace. In this situation, your handler will not be generated.
 
 **To generate a single, self-handling service with a "run" method, add the --self flag. Example:**
 ```bash
