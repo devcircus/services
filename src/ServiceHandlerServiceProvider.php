@@ -2,11 +2,11 @@
 
 namespace BrightComponents\Service;
 
-use Illuminate\Support\Facades\Config;
 use BrightComponents\Service\Commands\HandlerMakeCommand;
 use BrightComponents\Service\Commands\ServiceMakeCommand;
 use BrightComponents\Service\Contracts\ServiceCallerContract;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use BrightComponents\Service\Contracts\ServiceTranslatorContract;
 
 class ServiceHandlerServiceProvider extends BaseServiceProvider
 {
@@ -29,20 +29,30 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(ServiceCaller::class, function ($app) {
-            return new ServiceCaller($app);
+        $this->app->singleton(ServiceTranslator::class, function ($app) {
+            return new ServiceTranslator(
+                config('servicehandler.namespaces.root'),
+                config('servicehandler.namespaces.definitions'),
+                config('servicehandler.namespaces.handlers'),
+                config('servicehandler.definition_suffix'),
+                config('servicehandler.handler_suffix')
+            );
         });
 
-        $this->app->singleton(ServiceTranslator::class, function ($app) {
-            $translator = new ServiceTranslator();
-            $translator::initialize($appNamespace = $app->getNamespace());
+        $this->app->singleton(ServiceCaller::class, function ($app) {
+            $translator = $app->make(ServiceTranslator::class);
 
-            return $translator;
+            return new ServiceCaller($app, $translator);
         });
 
         $this->app->alias(
             ServiceCaller::class,
             ServiceCallerContract::class
+        );
+
+        $this->app->alias(
+            ServiceTranslator::class,
+            ServiceTranslatorContract::class
         );
     }
 
@@ -64,10 +74,6 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
             HandlerMakeCommand::class,
         ]);
 
-        if (Config::get('servicehandler.autoload')) {
-            $this->loadServices();
-        }
-
         $this->mapHandlers();
     }
 
@@ -81,15 +87,15 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
         return [
             ServiceCaller::class,
             ServiceCallerContract::class,
-            ServiceAutoloader::class,
             ServiceTranslator::class,
+            ServiceTranslatorContract::class,
         ];
     }
 
     /**
      * Map service handlers to services.
      *
-     * @return \App\Foundation\Components\ServiceCaller
+     * @return \BrightComponents\Service\ServiceCaller
      */
     public function mapHandlers()
     {
@@ -103,16 +109,11 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
      */
     public function getHandlers()
     {
-        $configHandlers = Config::get('servicehandler.handlers');
+        $configHandlers = config('servicehandler.handlers');
         if ($configHandlers && count($configHandlers)) {
             return $configHandlers;
         }
 
         return $this->handlers;
-    }
-
-    private function loadServices()
-    {
-        $this->handlers = $this->app->make(ServiceAutoloader::class)->load();
     }
 }

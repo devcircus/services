@@ -2,7 +2,6 @@
 
 namespace BrightComponents\Service\Commands;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
@@ -49,10 +48,6 @@ class ServiceMakeCommand extends GeneratorCommand
 
         if (! $this->option('self')) {
             $this->createHandler();
-        }
-
-        if (Config::get('servicehandler.cache')) {
-            Cache::forget(Config::get('servicehandler.cache_key'));
         }
     }
 

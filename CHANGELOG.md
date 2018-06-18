@@ -28,3 +28,8 @@ All notable changes to lara-service will be documented in this file
 ## 0.4.1 - 2018-06-11
 
 - Fix config only working in console.
+
+## 0.5.0 - 2018-06-17
+
+- Replace "autoloading" and cache features with runtime translating.
+- Update dependencies and cleanup unused and unnecessary code.

@@ -3,29 +3,6 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | Autoload Services
-    |--------------------------------------------------------------------------
-    |
-    | Autoload the services from the configured service namespace, instead of explicitly defining the mapping in
-    | this configuration file or in the ServiceHandlerServiceProvider. This option is enabled by default.
-    |
-    */
-    'autoload' => true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Cache Service/Handler mapping
-    |--------------------------------------------------------------------------
-    |
-    | If you are autoloading the services located in your chosen namespace, you can choose to cache the resulting mapping.
-    | This allows your application to use the services without having to discover and parse services on each request.
-    |
-    */
-    'cache' => false,
-    'cache_key' => 'service_handlers',
-
-    /*
-    |--------------------------------------------------------------------------
     | Namespaces
     |--------------------------------------------------------------------------
     |
@@ -53,8 +30,9 @@ return [
     |
     | example: 'definition_suffix' => 'Service'
     |
-    | NOTE: If you choose to autoload your service/handler mapping (option above), you MUST choose a suffix for your definition
-    | classes. Otherwise, you will need to explicitly define your service/handler mapping using the 'handlers' array.
+    | NOTE: If you choose to store your definitions and handlers in the same namespace, you will need to provide a suffix
+    | for, at least, either the definition or the handler. If not, the handler will not be created, due to the fact
+    | that the make command will attempt to create two files in the same namespace with the same exact name.
     */
     'definition_suffix' => 'Service',
     'handler_suffix' => 'Handler',
@@ -76,7 +54,10 @@ return [
     | Service / Handler mapping
     |--------------------------------------------------------------------------
     |
-    | Map Handlers to Services
+    | If you choose to utilize a namespace structure that can not be described by the configuration options above, you
+    | can explicitly map your service definitions to handlers by providing the fully qualified namespace of each.
+    | If there are name conflicts between services that have been explicitly mapped here and additional
+    | services that have been defined in the application, the mapped handlers will take precedence.
     |
     */
     'handlers' => [
