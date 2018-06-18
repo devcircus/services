@@ -33,3 +33,8 @@ All notable changes to lara-service will be documented in this file
 
 - Replace "autoloading" and cache features with runtime translating.
 - Update dependencies and cleanup unused and unnecessary code.
+
+## 0.5.1 - 2018-06-18
+
+- Add docblocks to translator and interface.
+- Fix comments in configuration to clarify parent namespace of self-handling services.
