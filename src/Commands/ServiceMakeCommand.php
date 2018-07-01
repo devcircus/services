@@ -4,7 +4,6 @@ namespace BrightComponents\Service\Commands;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Console\GeneratorCommand;
-use Symfony\Component\Console\Input\InputOption;
 use BrightComponents\Service\Exceptions\InvalidNamespaceException;
 
 class ServiceMakeCommand extends GeneratorCommand
@@ -31,13 +30,6 @@ class ServiceMakeCommand extends GeneratorCommand
     protected $type = 'Service';
 
     /**
-     * The value of the command input after formatting.
-     *
-     * @var string
-     */
-    protected $inputValue;
-
-    /**
      * Execute the console command.
      */
     public function handle()
@@ -45,20 +37,6 @@ class ServiceMakeCommand extends GeneratorCommand
         if (false === parent::handle() && ! $this->option('force')) {
             return;
         }
-
-        if (! $this->option('self')) {
-            $this->createHandler();
-        }
-    }
-
-    /**
-     * Create a handler for the service.
-     */
-    protected function createHandler()
-    {
-        $this->call('make:handler', [
-            'name' => $this->inputValue.Config::get('servicehandler.handler_suffix'),
-        ]);
     }
 
     /**
@@ -68,7 +46,7 @@ class ServiceMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return $this->option('self') ? __DIR__.'/stubs/service_self.stub' : __DIR__.'/stubs/service.stub';
+        return __DIR__.'/stubs/service.stub';
     }
 
     /**
@@ -80,25 +58,25 @@ class ServiceMakeCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        $serviceRootNamespace = Config::get('servicehandler.namespaces.root');
+        $serviceRootNamespace = Config::get('servicehandler.namespace');
 
         if (! $serviceRootNamespace) {
-            throw InvalidNamespaceException::missingServiceRootNamespace();
-        }
-
-        if ($this->option('self')) {
-            if ($selfHandlingNamespace = Config::get('servicehandler.namespaces.self_handling')) {
-                return $rootNamespace.'\\'.$serviceRootNamespace.'\\'.$selfHandlingNamespace;
-            }
-
-            return $rootNamespace.'\\'.$serviceRootNamespace;
-        }
-
-        if ($definitionNamespace = Config::get('servicehandler.namespaces.definitions')) {
-            return $rootNamespace.'\\'.$serviceRootNamespace.'\\'.$definitionNamespace;
+            throw InvalidNamespaceException::missingServiceNamespace();
         }
 
         return $rootNamespace.'\\'.$serviceRootNamespace;
+    }
+
+    /**
+     * Get the default namespace for the class.
+     *
+     * @param  string  $rootNamespace
+     *
+     * @return string
+     */
+    protected function getMethodName()
+    {
+        return Config::get('servicehandler.method', 'run');
     }
 
     /**
@@ -109,28 +87,45 @@ class ServiceMakeCommand extends GeneratorCommand
     protected function getNameInput()
     {
         $input = $input = studly_case(trim($this->argument('name')));
-        $suffix = Config::get('servicehandler.definition_suffix');
+        $suffix = Config::get('servicehandler.suffix');
 
         if (Config::get('servicehandler.override_duplicate_suffix')) {
-            if ($suffix && ends_with($input, $suffix)) {
-                $input = str_replace_last($suffix, '', $input);
-            }
+            return str_finish($input, $suffix);
         }
-
-        $this->inputValue = $input;
 
         return $input.$suffix;
     }
 
     /**
-     * Get the console command options.
+     * Build the class with the given name.
      *
-     * @return array
+     * @param  string  $name
+     *
+     * @return string
      */
-    protected function getOptions()
+    protected function buildClass($name)
     {
-        return [
-            ['self', null, InputOption::VALUE_NONE, 'Indicates that service is self-handling.'],
-        ];
+        $stub = $this->files->get($this->getStub());
+
+        return $this->replaceNamespace($stub, $name)->replaceMethod($stub)->replaceClass($stub, $name);
+    }
+
+    /**
+     * Replace the method name in the given stub.
+     *
+     * @param  string  $stub
+     * @param  string  $name
+     *
+     * @return $this
+     */
+    protected function replaceMethod(&$stub)
+    {
+        $stub = str_replace(
+            ['DummyMethod'],
+            [$this->getMethodName()],
+            $stub
+        );
+
+        return $this;
     }
 }

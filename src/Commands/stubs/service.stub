@@ -11,4 +11,14 @@ class DummyClass
     {
         //
     }
+
+    /**
+     * Handle the call to the service.
+     *
+     * @return mixed
+     */
+    public function DummyMethod()
+    {
+        //
+    }
 }
