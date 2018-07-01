@@ -8,6 +8,6 @@ class InvalidNamespaceException extends Exception
 {
     public static function missingServiceNamespace()
     {
-        return new static('You must define a root namespace for your services.');
+        return new static('A Service namespace must be defined in configuration.');
     }
 }

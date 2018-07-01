@@ -1,5 +1,5 @@
 # Bright Components - Service
-### A "Definition/Handler" Implementation of Service classes for Laravel Projects.
+### A Services implementation for Laravel Projects.
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/bright-components/servicehandler.svg)](https://packagist.org/packages/bright-components/servicehandler)
 [![Build Status](https://img.shields.io/travis/bright-components/servicehandler/master.svg)](https://travis-ci.org/bright-components/servicehandler)
@@ -8,16 +8,16 @@
 
 ![Bright Components](https://s3.us-east-2.amazonaws.com/bright-components/bc_large.png "Bright Components")
 
-BrightComponents' Service package scratches an itch I've had for a while. I routinely use single-action controllers with [Responder Classes](https://github.com/bright-components/responders), in combination with Service classes for gathering/manipulating data. In the past, I used Laravel's jobs(synchronous) for my services. There were times, though, that I needed to use jobs as well and didn't like that they were difficult to differentiate from my Service classes. So, drawing heavily from Laravel's job dispatching, I made 'dispatchable' Services. In doing so, I can now go to my 'Services' folder and see a clear picture of all of my application services. There is a one-to-one mapping of Service Definitions and Service Handlers and my controllers are super clean!
+BrightComponents' Service package scratches an itch I've had for a while. I routinely use single-action controllers with [Responder Classes](https://github.com/bright-components/responders), in combination with Service classes for gathering/manipulating data. In the past, I used Laravel's jobs(synchronous) for my services. There were times, though, that I needed to use jobs as well and didn't like that they were difficult to differentiate from my Service classes. Now, a quick look at my 'Services' folder and I can see a clear picture of all of my application services and my controllers are super clean!
 
 Example:
 ```php
 namespace App\Http\Controllers\Tasks;
 
 use App\Http\Controllers\Controller;
+use App\Services\StoreNewTaskService;
 use App\Http\Requests\StoreNewTaskRequest;
 use App\Http\Responders\Task\StoreResponder;
-use App\Services\Definitions\StoreNewTaskService;
 use BrightComponents\Service\Traits\CallsServices; // the trait could be added to your parent Controller class
 
 class Store extends Controller
@@ -67,12 +67,20 @@ You can install the package via composer:
 ```bash
 composer require bright-components/servicehandler
 ```
-> Note: Until version 1.0 is released, major features and bug fixes may be added between minor versions. To maintain stability, I recommend a restraint in the form of "^0.5.0". This would take the form of:
+> Note: Until version 1.0 is released, major features and bug fixes may be added between minor versions. To maintain stability, I recommend a restraint in the form of "^0.6.0". This would take the form of:
 ```bash
-composer require "bright-components/servicehandler:^0.5.0"
+composer require "bright-components/servicehandler:^0.6.0"
 ```
 
 In Laravel > 5.6.0, the ServiceProvider will be automatically detected and registered.
+If you are using an older version of Laravel, add the package service provider to your config/app.php file, in the 'providers' array:
+```php
+'providers' => [
+    //...
+    BrightComponents\Services\ServiceHandlerServiceProvider::class,
+    //...
+];
+```
 
 Then, if you would like to change any of the configuration options, run:
 ```bash
@@ -90,36 +98,30 @@ return [
     | Namespaces
     |--------------------------------------------------------------------------
     |
-    | Set the namespaces for the Service classes and Handlers.
+    | Set the namespace for Service classes.
     |
     */
-    'namespaces' => [
-        // The root namespace is in relation to the application root namespace, usually 'App'.
-        'root' => 'Services',
-
-        // The definitions and handlers namespace is in relation to the root Service namespace, listed above.
-        'definitions' => 'Definitions',
-        'handlers' => 'Handlers',
-
-        // The self-handling services namespace is in relation to the root Service namespace, listed above.
-        'self_handling' =>'',
-    ],
+    'namespace' => 'Services',
 
     /*
     |--------------------------------------------------------------------------
     | Suffixes
     |--------------------------------------------------------------------------
     |
-    | Set the suffix for the Service Definition and Handler class names. Use an empty string for no suffix.
+    | Set the suffix for the Service classes.
     |
-    | example: 'definition_suffix' => 'Service'
-    |
-    | NOTE: If you choose to store your definitions and handlers in the same namespace, you will need to provide a suffix
-    | for, at least, either the definition or the handler. If not, the handler will not be created, due to the fact
-    | that the make command will attempt to create two files in the same namespace with the same exact name.
     */
-    'definition_suffix' => 'Service',
-    'handler_suffix' => 'Handler',
+    'suffix' => 'Service',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Method Name
+    |--------------------------------------------------------------------------
+    |
+    | Set the method name for handling services.
+    |
+     */
+    'method' => 'run',
 
     /*
     |--------------------------------------------------------------------------
@@ -132,54 +134,28 @@ return [
     |
     */
     'override_duplicate_suffix' => true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Service / Handler mapping
-    |--------------------------------------------------------------------------
-    |
-    | If you choose to utilize a namespace structure that can not be described by the configuration options above, you
-    | can explicitly map your service definitions to handlers by providing the fully qualified namespace of each.
-    | If there are name conflicts between services that have been explicitly mapped here and additional
-    | services that have been defined in the application, the mapped handlers will take precedence.
-    |
-    */
-    'handlers' => [
-        // 'App\Services\Definitions\StoreItemService' => 'App\Services\Definitions\StoreItemServiceHandler',
-    ],
 ];
 ```
 
 ## Usage
-Once the package is installed and the config is copied (optionally), you can begin generating your Service Definitions and Handlers.
-**To generate a Service Definition and Handler, run:**
+Once the package is installed and the config is copied (optionally), you can begin generating your Services.
+**To generate a Service class, run:**
 
 ```bash
 php artisan make:service StoreNewTask
 ```
 
-Based on the configuration options above, this will create a 'StoreNewTaskService' Definition class and a 'StoreNewTaskHandler' Handler class.
+Based on the configuration options above, this will create an 'App\Services\StoreNewTaskService' class.
 
-> Note, if you decide to use a namespace structure for your services, that can't be defined by the configuration options, you will need to explicitly define your service-to-handler mapping using the 'handlers' config option. See example below:
-```php
-    'handlers' => [
-        'App\Services\Definitions\StoreNewTaskService' => 'App\Services\Handlers\StoreNewTaskHandler',
-    ],
-```
-> Otherwise, you can use the default settings, or customize the namespaces and suffixes in the configuration. Based on these settings, the service will be translated to a handler at runtime. If your definitions and handlers are in the same namespace, you will need to assign a suffix to, at least, either your definitions or handlers. If not, the generator will attempt to create two classes with the same name in the same namespace. In this situation, your handler will not be generated.
-
-**To generate a single, self-handling service with a "run" method, add the --self flag. Example:**
-```bash
-php artisan make:service StoreNewTask --self
-```
-
-This will generate one service class based on your namespace option in the servicehandler configuration. The "run" method on this class will be executed when you 'call' a service.
+> Note, by default, the 'run' method will be called when you 'call' your service. You can change this method name in the configuration file.
 
 Example Service Definition class:
 
 ```php
 // Service Definition Class
 namespace App\Services\Definitions;
+
+use App\Models\Repositories\TaskRepository;
 
 class StoreNewTaskService
 {
@@ -199,8 +175,19 @@ class StoreNewTaskService
     {
         $this->params = $params;
     }
+
+    /**
+     * Handle the call to the service.
+     *
+     * @return mixed
+     */
+    public function run(TaskRepository $repo)
+    {
+        return $repo->create($this->params);
+    }
 }
 ```
+As in the example above, simply pass any necessary data to your service definition constructor. You may typehint any dependencies needed by your service in the 'run' method, and they will be resolved from the container by Laravel.
 
 Now, you can call your service by using the included trait (CallsServices) or use dependency injection to add the ServiceCaller to your class:
 
@@ -234,46 +221,6 @@ class StoreTaskController extends StoreTaskController
         $task = $this->call(new StoreNewTaskService($request->all()));
 
         return view('tasks.show', ['task' => $task]);
-    }
-}
-```
-As in the example above, simply pass any necessary data to your service definition constructor. The service and its associated data will be available in the 'run' method of the Handler. In your Handler class, you may typehint any dependencies needed in the class constructor and they will be resolved from the Container by Laravel.
-
-```php
-namespace App\Services\Handlers;
-
-use App\Models\Task;
-use App\Services\Definitions\StoreNewTaskService;
-
-class StoreNewTaskHandler
-{
-    /**
-     * The model.
-     *
-     * @var \App\Models\Task
-     */
-    public $model;
-
-    /**
-     * Construct anew StoreNewTaskHandler.
-     *
-     * @param  \App\Models\Task $task
-     */
-    public function __construct(Task $task)
-    {
-        $this->model = $task;
-    }
-
-    /**
-     * Handle the storing of a new task.
-     *
-     * @param  \App\Services\Definition\StoreNewTaskService  $service
-     *
-     * @return \App\Models\Task
-     */
-    public function handle(StoreNewTaskService $service)
-    {
-        return $this->model->create($service->params);
     }
 }
 ```

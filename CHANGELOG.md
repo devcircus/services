@@ -38,3 +38,7 @@ All notable changes to lara-service will be documented in this file
 
 - Add docblocks to translator and interface.
 - Fix comments in configuration to clarify parent namespace of self-handling services.
+
+## 0.6.0 - 2018-07-01
+
+- Replace the Service Definitions/Handler structure with a self-handling implementation.

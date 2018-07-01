@@ -3,8 +3,9 @@
 namespace BrightComponents\Service;
 
 use Illuminate\Contracts\Container\Container;
+use BrightComponents\Service\Exceptions\ServiceHandlerMethodException;
 
-class ServiceCaller
+class ServiceCaller extends AbstractServiceCaller
 {
     /**
      * The container implementation.
@@ -14,28 +15,20 @@ class ServiceCaller
     protected $container;
 
     /**
-     * The service translator.
+     * The handler method to be called.
      *
-     * @var \BrightComponents\Service\ServiceTranslator
+     * @var string
      */
-    protected $translator;
-
-    /**
-     * The command-to-handler mapping for non-self-handling services.
-     *
-     * @var array
-     */
-    protected $handlers = [];
+    public static $handlerMethod;
 
     /**
      * Create a new service caller instance.
      *
      * @param  \Illuminate\Contracts\Container\Container  $container
      */
-    public function __construct(Container $container, ServiceTranslator $translator)
+    public function __construct(Container $container)
     {
         $this->container = $container;
-        $this->translator = $translator;
     }
 
     /**
@@ -47,77 +40,22 @@ class ServiceCaller
      */
     public function call($service)
     {
-        if ($handler = $this->getServiceHandler($service)) {
-            $callback = function ($service) use ($handler) {
-                return $handler->run($service);
-            };
-        } else {
-            $callback = function ($service) {
-                return $this->container->call([$service, 'run']);
-            };
+        if (! $this->hasHandler($service)) {
+            throw ServiceHandlerMethodException::notFound($service);
         }
 
-        return call_user_func($callback, $service);
+        return $this->container->call([$service, $this::$handlerMethod]);
     }
 
     /**
-     * Retrieve the handler for a service.
-     *
-     * @param  mixed  $service
-     *
-     * @return bool|mixed
-     */
-    public function getServiceHandler($service)
-    {
-        if ($this->hasMappedHandler($service)) {
-            return $this->container->make($this->handlers[get_class($service)]);
-        }
-        if ($handler = $this->getTranslatableHandler($service)) {
-            return $this->container->make($handler);
-        }
-
-        return false;
-    }
-
-    /**
-     * Map a service to a handler.
-     *
-     * @param  array  $map
-     *
-     * @return $this
-     */
-    public function map(array $map)
-    {
-        $this->handlers = array_merge($this->handlers, $map);
-
-        return $this;
-    }
-
-    /**
-     * Determine if the given service has a handler defined.
+     * Determine if the service handler method exists.
      *
      * @param  mixed  $service
      *
      * @return bool
      */
-    private function hasMappedHandler($service)
+    public function hasHandler($service)
     {
-        return array_key_exists(get_class($service), $this->handlers);
-    }
-
-    /**
-     * Translate the given service to a handler..
-     *
-     * @param  mixed  $service
-     *
-     * @return mixed
-     */
-    private function getTranslatableHandler($service)
-    {
-        if ($handler = $this->translator->translateServiceToHandler($service)) {
-            return $handler;
-        }
-
-        return false;
+        return method_exists($service, $this::$handlerMethod);
     }
 }
