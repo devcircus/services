@@ -8,6 +8,9 @@
 
 ![Bright Components](https://s3.us-east-2.amazonaws.com/bright-components/bc_large.png "Bright Components")
 
+### Disclaimer
+The packages under the BrightComponents namespace are basically a way for me to avoid copy/pasting simple functionality that I like in all of my projects. There's nothing groundbreaking here, just a little extra functionality for form requests, controllers, custom rules, services, etc.
+
 BrightComponents' Service package scratches an itch I've had for a while. I routinely use single-action controllers with [Responder Classes](https://github.com/bright-components/responders), in combination with Service classes for gathering/manipulating data. In the past, I used Laravel's jobs(synchronous) for my services. There were times, though, that I needed to use jobs as well and didn't like that they were difficult to differentiate from my Service classes. Now, a quick look at my 'Services' folder and I can see a clear picture of all of my application services and my controllers are super clean!
 
 Example:
@@ -156,6 +159,7 @@ Example Service Definition class:
 namespace App\Services\Definitions;
 
 use App\Models\Repositories\TaskRepository;
+use BrightComponents\Service\Payloads\Payload;
 
 class StoreNewTaskService
 {
@@ -183,11 +187,14 @@ class StoreNewTaskService
      */
     public function run(TaskRepository $repo)
     {
-        return $repo->create($this->params);
+        $task = $repo->create($this->params);
+
+        return new Payload(['task' => $task]);
     }
 }
 ```
 As in the example above, simply pass any necessary data to your service definition constructor. You may typehint any dependencies needed by your service in the 'run' method, and they will be resolved from the container by Laravel.
+> Although the 'run' method may return data of any type you choose, I prefer wrapping the return data in a payload object. This way consistency is maintained between actions and a common format is forwarded to the responder. This opens the door to higher code integrity and clarity.
 
 Now, you can call your service by using the included trait (CallsServices) or use dependency injection to add the ServiceCaller to your class:
 
