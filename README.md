@@ -65,7 +65,7 @@ My controllers simply defer to a Service to handle the dirty work, then, using [
 
 ## Installation
 
-You can install the package via composer:
+You can install the package via composer. From your project directory, in your terminal, enter:
 
 ```bash
 composer require bright-components/servicehandler
@@ -85,7 +85,9 @@ If you are using an older version of Laravel, add the package service provider t
 ];
 ```
 
-Then, if you would like to change any of the configuration options, run:
+### Package Configuration
+
+If you would like to change any of the package configuration options, run the following command in your terminal:
 ```bash
 php artisan vendor:publish
 ```
@@ -142,7 +144,9 @@ return [
 
 ## Usage
 Once the package is installed and the config is copied (optionally), you can begin generating your Services.
-**To generate a Service class, run:**
+
+### Generating a Service class
+From inside your project directory, in your terminal, run:
 
 ```bash
 php artisan make:service StoreNewTask
@@ -194,24 +198,41 @@ class StoreNewTaskService
 }
 ```
 As in the example above, simply pass any necessary data to your service definition constructor. You may typehint any dependencies needed by your service in the 'run' method, and they will be resolved from the container by Laravel.
-> Although the 'run' method may return data of any type you choose, I prefer wrapping the return data in a payload object. This way consistency is maintained between actions and a common format is forwarded to the responder. This opens the door to higher code integrity and clarity.
+> Your Service class can ultimately return any type you need. If you prefer having a consistent return from all of your services, you may choose to utilize the Payload class. This is simply a wrapper for the data being sent back to your controller. An AbstractPayload class is included, as well as a generic Payload and an ErrorPayload class. *These classes do not have any functionality at the moment. Future releases prior to 1.0 may introduce methods and/or properties for these classes.*
 
-Now, you can call your service by using the included trait (CallsServices) or use dependency injection to add the ServiceCaller to your class:
-
+### Calling Services
+There are a few options for calling a service. The first example below, utilizes the included "CallsServices" trait. You may include this trait in your base controller so that all controllers have access.
 ```php
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-// use BrightComponents\Service\ServiceCaller;
 use App\Services\Definitions\StoreNewTaskService;
 use BrightComponents\Service\Traits\CallsServices;
 
 class StoreTaskController extends StoreTaskController
 {
-    // Use the provided trait
     use CallsServices;
 
-    /* Or, alternatively, use dependency injection instead of the trait
+    public function store(Request $request)
+    {
+        $task = $this->call(new StoreNewTaskService($request->all()));
+
+        return view('tasks.show', ['task' => $task]);
+    }
+}
+```
+
+The next option is to include the ServiceCaller via dependency injection, the use the "call" method:
+```php
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use BrightComponents\Service\ServiceCaller;
+use App\Services\Definitions\StoreNewTaskService;
+
+class StoreTaskController extends StoreTaskController
+{
+    use CallsServices;
 
     private $service;
 
@@ -220,12 +241,27 @@ class StoreTaskController extends StoreTaskController
         $this->service = $service;
     }
 
-    Then call the service using $this->service->call(new StoreNewTaskService());
-    */
-
     public function store(Request $request)
     {
-        $task = $this->call(new StoreNewTaskService($request->all()));
+        $task = $this->service->call(new StoreNewTaskService($request->all()));
+
+        return view('tasks.show', ['task' => $task]);
+    }
+}
+```
+
+Finally, like Jobs in Laravel, the service has the ability to call itself:
+```php
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Services\Definitions\StoreNewTaskService;
+
+class StoreTaskController extends StoreTaskController
+{
+    public function store(Request $request)
+    {
+        $task = StoreNewTaskService::call($request->all());
 
         return view('tasks.show', ['task' => $task]);
     }

@@ -2,6 +2,8 @@
 
 namespace BrightComponents\Service\Traits;
 
+use BrightComponents\Service\ServiceCaller;
+
 trait SelfCallingService
 {
     /**
@@ -9,8 +11,8 @@ trait SelfCallingService
      *
      * @return mixed
      */
-    public static function run()
+    public static function call()
     {
-        return app(static::class)->call(new static(...func_get_args()));
+        return app(ServiceCaller::class)->call(new static(...func_get_args()));
     }
 }
