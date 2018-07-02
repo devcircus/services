@@ -42,3 +42,8 @@ All notable changes to lara-service will be documented in this file
 ## 0.6.0 - 2018-07-01
 
 - Replace the Service Definitions/Handler structure with a self-handling implementation.
+
+## 0.6.1 - 2018-07-01
+
+- Add a payload object for wrapping the result of the domain, to send to the responder.
+- Add a trait to Services to allow a service to call itself. ie. MyService::call()
