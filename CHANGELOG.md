@@ -55,3 +55,8 @@ All notable changes to lara-service will be documented in this file
 ## 0.6.3 - 2018-07-02
 
 - Second attempt to fix Payload namespace.
+
+## 0.6.4 - 2018-07-03
+
+- Extract the Payload classes to bright-components/common package.
+- Update README to reflect this change.

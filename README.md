@@ -163,7 +163,7 @@ Example Service Definition class:
 namespace App\Services\Definitions;
 
 use App\Models\Repositories\TaskRepository;
-use BrightComponents\Service\Payloads\Payload;
+use BrightComponents\Common\Payloads\Payload;
 
 class StoreNewTaskService
 {
@@ -198,7 +198,7 @@ class StoreNewTaskService
 }
 ```
 As in the example above, simply pass any necessary data to your service definition constructor. You may typehint any dependencies needed by your service in the 'run' method, and they will be resolved from the container by Laravel.
-> Your Service class can ultimately return any type you need. If you prefer having a consistent return from all of your services, you may choose to utilize the Payload class. This is simply a wrapper for the data being sent back to your controller. An AbstractPayload class is included, as well as a generic Payload and an ErrorPayload class. *These classes do not have any functionality at the moment. Future releases prior to 1.0 may introduce methods and/or properties for these classes.*
+> Your Service class can ultimately return any type you need. If you prefer having a consistent return type from all of your services, you may choose to utilize the Payload class. The Payload classes are included in the [bright-components/common package](https://github.com/bright-components/common). A Payload is a wrapper for the data being sent back to your controller. You can extend the AbstractPayload class, or use one of the generic Payload classes included(Payload and ErrorPayload). *These classes do not have any functionality at the moment. Future releases prior to 1.0 may introduce methods and/or properties for these classes.*
 
 ### Calling Services
 There are a few options for calling a service. The first example below, utilizes the included "CallsServices" trait. You may include this trait in your base controller so that all controllers have access.
