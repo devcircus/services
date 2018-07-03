@@ -1,6 +1,6 @@
 <?php
 
-namespace BrightComponents\Services\Payloads;
+namespace BrightComponents\Service\Payloads;
 
 abstract class AbstractPayload
 {
