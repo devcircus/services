@@ -1,7 +1,7 @@
 {
     "name": "bright-components/servicehandler",
     "description": "Service Definition/Handler Implementation for Laravel Projects",
-    "version": "0.6.3",
+    "version": "0.6.4",
     "keywords": [
         "bright-components",
         "servicehandler"
@@ -21,7 +21,8 @@
         "illuminate/config": "5.6.*",
         "illuminate/console": "5.6.*",
         "illuminate/support": "5.6.*",
-        "illuminate/contracts": "5.6.*"
+        "illuminate/contracts": "5.6.*",
+        "bright-components/common": "^0.1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.0"
