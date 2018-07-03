@@ -48,6 +48,10 @@ All notable changes to lara-service will be documented in this file
 - Add a payload object for wrapping the result of the domain, to send to the responder.
 - Add a trait to Services to allow a service to call itself. ie. MyService::call()
 
-## 0.6.2 - 2018-07-01
+## 0.6.2 - 2018-07-02
 
 - Fix Payload namespace.
+
+## 0.6.3 - 2018-07-02
+
+- Second attempt to fix Payload namespace.
