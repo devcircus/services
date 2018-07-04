@@ -64,3 +64,7 @@ All notable changes to lara-service will be documented in this file
 ## 0.7.0 - 2018-07-04
 
 - With Handler functionality removed, rename package to 'services' from 'servicehandler'.
+
+## 0.7.1 - 2018-07-04
+
+- Bump version to pull in master, including the new code coverage reporter id.

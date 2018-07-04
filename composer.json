@@ -1,7 +1,7 @@
 {
     "name": "bright-components/services",
     "description": "Service Implementation for Laravel Projects",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "keywords": [
         "bright-components",
         "servicehandler"
