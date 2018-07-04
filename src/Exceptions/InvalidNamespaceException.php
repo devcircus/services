@@ -1,6 +1,6 @@
 <?php
 
-namespace BrightComponents\Service\Exceptions;
+namespace BrightComponents\Services\Exceptions;
 
 use Exception;
 

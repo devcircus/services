@@ -1,9 +1,9 @@
 <?php
 
-namespace BrightComponents\Service;
+namespace BrightComponents\Services;
 
 use Illuminate\Contracts\Container\Container;
-use BrightComponents\Service\Exceptions\ServiceHandlerMethodException;
+use BrightComponents\Services\Exceptions\ServiceHandlerMethodException;
 
 class ServiceCaller extends AbstractServiceCaller
 {

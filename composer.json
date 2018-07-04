@@ -1,12 +1,12 @@
 {
-    "name": "bright-components/servicehandler",
-    "description": "Service Definition/Handler Implementation for Laravel Projects",
-    "version": "0.6.4",
+    "name": "bright-components/services",
+    "description": "Service Implementation for Laravel Projects",
+    "version": "0.7.0",
     "keywords": [
         "bright-components",
         "servicehandler"
     ],
-    "homepage": "https://github.com/bright-components/servicehandler",
+    "homepage": "https://github.com/bright-components/services",
     "license": "MIT",
     "authors": [
         {
@@ -29,12 +29,12 @@
     },
     "autoload": {
         "psr-4": {
-            "BrightComponents\\Service\\": "src"
+            "BrightComponents\\Services\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "BrightComponents\\Service\\Tests\\": "tests"
+            "BrightComponents\\Services\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -48,7 +48,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "BrightComponents\\Service\\ServiceHandlerServiceProvider"
+                "BrightComponents\\Services\\ServicesServiceProvider"
             ]
         }
     }

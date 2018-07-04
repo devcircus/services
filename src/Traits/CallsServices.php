@@ -1,9 +1,9 @@
 <?php
 
-namespace BrightComponents\Service\Traits;
+namespace BrightComponents\Services\Traits;
 
 use Illuminate\Container\Container;
-use BrightComponents\Service\ServiceCaller;
+use BrightComponents\Services\ServiceCaller;
 
 trait CallsServices
 {

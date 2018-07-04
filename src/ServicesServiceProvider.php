@@ -1,11 +1,11 @@
 <?php
 
-namespace BrightComponents\Service;
+namespace BrightComponents\Services;
 
-use BrightComponents\Service\Commands\ServiceMakeCommand;
+use BrightComponents\Services\Commands\ServiceMakeCommand;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
-class ServiceHandlerServiceProvider extends BaseServiceProvider
+class ServicesServiceProvider extends BaseServiceProvider
 {
     /**
      * Indicates if loading of the provider is deferred.
@@ -36,17 +36,17 @@ class ServiceHandlerServiceProvider extends BaseServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../config/servicehandler.php' => config_path('servicehandler.php'),
+                __DIR__.'/../config/service-classes.php' => config_path('service-classes.php'),
             ]);
         }
 
-        $this->mergeConfigFrom(__DIR__.'/../config/servicehandler.php', 'servicehandler');
+        $this->mergeConfigFrom(__DIR__.'/../config/service-classes.php', 'service-classes');
 
         $this->commands([
             ServiceMakeCommand::class,
         ]);
 
-        ServiceCaller::setHandlerMethod(config('servicehandler.method', 'run'));
+        ServiceCaller::setHandlerMethod(config('service-classes.method', 'run'));
     }
 
     /**
