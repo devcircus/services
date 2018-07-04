@@ -1,10 +1,10 @@
-# Bright Components - Service
+# Bright Components - Services
 ### A Services implementation for Laravel Projects.
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/bright-components/servicehandler.svg)](https://packagist.org/packages/bright-components/servicehandler)
-[![Build Status](https://img.shields.io/travis/bright-components/servicehandler/master.svg)](https://travis-ci.org/bright-components/servicehandler)
-[![Quality Score](https://img.shields.io/scrutinizer/g/bright-components/servicehandler.svg)](https://scrutinizer-ci.com/g/bright-components/servicehandler)
-[![Total Downloads](https://img.shields.io/packagist/dt/bright-components/servicehandler.svg)](https://packagist.org/packages/bright-components/servicehandler)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/bright-components/services.svg)](https://packagist.org/packages/bright-components/services)
+[![Build Status](https://img.shields.io/travis/bright-components/services/master.svg)](https://travis-ci.org/bright-components/services)
+[![Quality Score](https://img.shields.io/scrutinizer/g/bright-components/services.svg)](https://scrutinizer-ci.com/g/bright-components/services)
+[![Total Downloads](https://img.shields.io/packagist/dt/bright-components/services.svg)](https://packagist.org/packages/bright-components/services)
 
 ![Bright Components](https://s3.us-east-2.amazonaws.com/bright-components/bc_large.png "Bright Components")
 
@@ -21,7 +21,7 @@ use App\Http\Controllers\Controller;
 use App\Services\StoreNewTaskService;
 use App\Http\Requests\StoreNewTaskRequest;
 use App\Http\Responders\Task\StoreResponder;
-use BrightComponents\Service\Traits\CallsServices; // the trait could be added to your parent Controller class
+use BrightComponents\Services\Traits\CallsServices; // the trait could be added to your parent Controller class
 
 class Store extends Controller
 {
@@ -68,19 +68,19 @@ My controllers simply defer to a Service to handle the dirty work, then, using [
 You can install the package via composer. From your project directory, in your terminal, enter:
 
 ```bash
-composer require bright-components/servicehandler
+composer require bright-components/services
 ```
-> Note: Until version 1.0 is released, major features and bug fixes may be added between minor versions. To maintain stability, I recommend a restraint in the form of "^0.6.0". This would take the form of:
+> Note: Until version 1.0 is released, major features and bug fixes may be added between minor versions. To maintain stability, I recommend a restraint in the form of "^0.7.*". This would take the form of:
 ```bash
-composer require "bright-components/servicehandler:^0.6.0"
+composer require "bright-components/services:0.7.*"
 ```
 
-In Laravel > 5.6.0, the ServiceProvider will be automatically detected and registered.
+In Laravel > 5.6.0, the ServiceProvider will be automtically detected and registered.
 If you are using an older version of Laravel, add the package service provider to your config/app.php file, in the 'providers' array:
 ```php
 'providers' => [
     //...
-    BrightComponents\Services\ServiceHandlerServiceProvider::class,
+    BrightComponents\Services\ServicesServiceProvider::class,
     //...
 ];
 ```
@@ -91,9 +91,9 @@ If you would like to change any of the package configuration options, run the fo
 ```bash
 php artisan vendor:publish
 ```
-and choose the 'BrightComponents/Service' option.
+and choose the 'BrightComponents/Services' option.
 
-This will copy the package configuration (servicehandler.php) to your 'config' folder.
+This will copy the package configuration (service-classes.php) to your 'config' folder.
 See the configuration file below, for all options available:
 
 ```php
@@ -207,7 +207,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\Definitions\StoreNewTaskService;
-use BrightComponents\Service\Traits\CallsServices;
+use BrightComponents\Services\Traits\CallsServices;
 
 class StoreTaskController extends StoreTaskController
 {
@@ -227,7 +227,7 @@ The next option is to include the ServiceCaller via dependency injection, the us
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use BrightComponents\Service\ServiceCaller;
+use BrightComponents\Services\ServiceCaller;
 use App\Services\Definitions\StoreNewTaskService;
 
 class StoreTaskController extends StoreTaskController

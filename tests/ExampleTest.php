@@ -1,6 +1,6 @@
 <?php
 
-namespace BrightComponents\Service\Tests;
+namespace BrightComponents\Services\Tests;
 
 use PHPUnit\Framework\TestCase;
 

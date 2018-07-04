@@ -2,7 +2,7 @@
 
 namespace DummyNamespace;
 
-use BrightComponents\Service\Traits\SelfCallingService;
+use BrightComponents\Services\Traits\SelfCallingService;
 
 class DummyClass
 {

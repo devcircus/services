@@ -1,6 +1,6 @@
 <?php
 
-namespace BrightComponents\Service;
+namespace BrightComponents\Services;
 
 abstract class AbstractServiceCaller
 {

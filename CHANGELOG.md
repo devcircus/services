@@ -60,3 +60,7 @@ All notable changes to lara-service will be documented in this file
 
 - Extract the Payload classes to bright-components/common package.
 - Update README to reflect this change.
+
+## 0.7.0 - 2018-07-04
+
+- With Handler functionality removed, rename package to 'services' from 'servicehandler'.

@@ -1,10 +1,10 @@
 <?php
 
-namespace BrightComponents\Service\Commands;
+namespace BrightComponents\Services\Commands;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Console\GeneratorCommand;
-use BrightComponents\Service\Exceptions\InvalidNamespaceException;
+use BrightComponents\Services\Exceptions\InvalidNamespaceException;
 
 class ServiceMakeCommand extends GeneratorCommand
 {
@@ -58,7 +58,7 @@ class ServiceMakeCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        $serviceRootNamespace = Config::get('servicehandler.namespace');
+        $serviceRootNamespace = Config::get('service-classes.namespace');
 
         if (! $serviceRootNamespace) {
             throw InvalidNamespaceException::missingServiceNamespace();
@@ -76,7 +76,7 @@ class ServiceMakeCommand extends GeneratorCommand
      */
     protected function getMethodName()
     {
-        return Config::get('servicehandler.method', 'run');
+        return Config::get('service-classes.method', 'run');
     }
 
     /**
@@ -87,9 +87,9 @@ class ServiceMakeCommand extends GeneratorCommand
     protected function getNameInput()
     {
         $input = $input = studly_case(trim($this->argument('name')));
-        $suffix = Config::get('servicehandler.suffix');
+        $suffix = Config::get('service-classes.suffix');
 
-        if (Config::get('servicehandler.override_duplicate_suffix')) {
+        if (Config::get('service-classes.override_duplicate_suffix')) {
             return str_finish($input, $suffix);
         }
 
