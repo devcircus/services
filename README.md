@@ -64,9 +64,7 @@ class Store extends Controller
 My controllers simply defer to a Service to handle the dirty work, then, using [Responders](https://github.com/bright-components/responders), the response is sent. A very clean approach.
 
 ## Installation
-
 You can install the package via composer. From your project directory, in your terminal, enter:
-
 ```bash
 composer require bright-components/services
 ```
@@ -86,7 +84,6 @@ If you are using an older version of Laravel, add the package service provider t
 ```
 
 ### Package Configuration
-
 If you would like to change any of the package configuration options, run the following command in your terminal:
 ```bash
 php artisan vendor:publish
@@ -133,7 +130,7 @@ return [
     | Duplicate Suffixes
     |--------------------------------------------------------------------------
     |
-    | If you have a definition suffix set in the config and try to generate a Service that also includes the suffix,
+    | If you have a Service suffix set in the config and try to generate a Service that also includes the suffix,
     | the package will recognize this duplication and rename the Service to remove the extra suffix.
     | This is the default behavior. To override and allow the duplication, change to false.
     |
@@ -149,18 +146,18 @@ Once the package is installed and the config is copied (optionally), you can beg
 From inside your project directory, in your terminal, run:
 
 ```bash
-php artisan make:service StoreNewTask
+php artisan bright:service StoreNewTask
 ```
 
 Based on the configuration options above, this will create an 'App\Services\StoreNewTaskService' class.
 
 > Note, by default, the 'run' method will be called when you 'call' your service. You can change this method name in the configuration file.
 
-Example Service Definition class:
+Example Service class:
 
 ```php
-// Service Definition Class
-namespace App\Services\Definitions;
+// Service Class
+namespace App\Services;
 
 use App\Models\Repositories\TaskRepository;
 use BrightComponents\Common\Payloads\Payload;
@@ -197,7 +194,7 @@ class StoreNewTaskService
     }
 }
 ```
-As in the example above, simply pass any necessary data to your service definition constructor. You may typehint any dependencies needed by your service in the 'run' method, and they will be resolved from the container by Laravel.
+As in the example above, simply pass any necessary data to your service constructor. You may typehint any dependencies needed by your service in the 'run' method, and they will be resolved from the container by Laravel.
 > Your Service class can ultimately return any type you need. If you prefer having a consistent return type from all of your services, you may choose to utilize the Payload class. The Payload classes are included in the [bright-components/common package](https://github.com/bright-components/common). A Payload is a wrapper for the data being sent back to your controller. You can extend the AbstractPayload class, or use one of the generic Payload classes included(Payload and ErrorPayload). *These classes do not have any functionality at the moment. Future releases prior to 1.0 may introduce methods and/or properties for these classes.*
 
 ### Calling Services
@@ -206,7 +203,7 @@ There are a few options for calling a service. The first example below, utilizes
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\Definitions\StoreNewTaskService;
+use App\Services\StoreNewTaskService;
 use BrightComponents\Services\Traits\CallsServices;
 
 class StoreTaskController extends StoreTaskController
@@ -228,7 +225,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use BrightComponents\Services\ServiceCaller;
-use App\Services\Definitions\StoreNewTaskService;
+use App\Services\StoreNewTaskService;
 
 class StoreTaskController extends StoreTaskController
 {
@@ -255,7 +252,7 @@ Finally, like Jobs in Laravel, the service has the ability to call itself:
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\Definitions\StoreNewTaskService;
+use App\Services\StoreNewTaskService;
 
 class StoreTaskController extends StoreTaskController
 {
