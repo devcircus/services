@@ -13,7 +13,7 @@ class ServiceMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $name = 'make:service';
+    protected $name = 'bright:service {name}';
 
     /**
      * The console command description.
