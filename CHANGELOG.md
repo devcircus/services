@@ -68,3 +68,7 @@ All notable changes to lara-service will be documented in this file
 ## 0.7.1 - 2018-07-04
 
 - Bump version to pull in master, including the new code coverage reporter id.
+
+## 0.7.2 - 2018-07-08
+
+- Rename make:service command namespace to "bright".
