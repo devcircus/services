@@ -9,11 +9,11 @@ use BrightComponents\Services\Exceptions\InvalidNamespaceException;
 class ServiceMakeCommand extends GeneratorCommand
 {
     /**
-     * The console command name.
+     * The name and signature of the console command.
      *
      * @var string
      */
-    protected $name = 'bright:service {name}';
+    protected $signature = 'bright:service {name}';
 
     /**
      * The console command description.
