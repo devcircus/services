@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to lara-service will be documented in this file
+All notable changes to BrightComponents/Services will be documented in this file
 
 ## 0.1.0 - 2018-05-21
 
@@ -72,3 +72,37 @@ All notable changes to lara-service will be documented in this file
 ## 0.7.2 - 2018-07-08
 
 - Rename make:service command namespace to "bright".
+
+## 0.8.0 - 2018-07-10
+
+- In Service classes, auto-resolved dependencies have been moved from the "run" method to the constructor. Parameters have been moved from the constructor to the "run" method.
+
+### New Ways to Call Services
+- Using the "CallsServices" trait:
+```php
+public function __invoke(Request $request)
+{
+    $result = $this->call(StoreCommentService::class, $request->all());
+}
+```
+
+- Injecting the ServiceCaller and using the "call" method:
+```php
+public function __construct(ServiceCaller $caller)
+{
+    $this->caller = $caller;
+}
+
+public function __invoke(Request $request)
+{
+    $result = this->caller->call(StoreCommentService::class, $request->all());
+}
+```
+
+- Using the "call" method of the Service class itself:
+```php
+public function __invoke(Request $request)
+{
+    $result = StoreCommentService::call($request->all());
+}
+```
