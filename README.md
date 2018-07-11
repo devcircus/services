@@ -11,6 +11,7 @@
 ### Disclaimer
 The packages under the BrightComponents namespace are basically a way for me to avoid copy/pasting simple functionality that I like in all of my projects. There's nothing groundbreaking here, just a little extra functionality for form requests, controllers, custom rules, services, etc.
 
+### Inspiration
 BrightComponents' Service package scratches an itch I've had for a while. I routinely use single-action controllers with [Responder Classes](https://github.com/bright-components/responders), in combination with Service classes for gathering/manipulating data. In the past, I used Laravel's jobs(synchronous) for my services. There were times, though, that I needed to use jobs as well and didn't like that they were difficult to differentiate from my Service classes. Now, a quick look at my 'Services' folder and I can see a clear picture of all of my application services and my controllers are super clean!
 
 Example:
@@ -53,7 +54,7 @@ class Store extends Controller
      */
     public function __invoke(StoreTaskRequest $request)
     {
-        $task = $this->call(new StoreNewTaskService($request->validated()));
+        $task = $this->call(StoreNewTaskService::class, ($request->validated()));
 
         return $this->responder->respond($request, $task);
     }
@@ -68,9 +69,9 @@ You can install the package via composer. From your project directory, in your t
 ```bash
 composer require bright-components/services
 ```
-> Note: Until version 1.0 is released, major features and bug fixes may be added between minor versions. To maintain stability, I recommend a restraint in the form of "^0.7.*". This would take the form of:
+> Note: Until version 1.0 is released, major features and bug fixes may be added between minor versions. To maintain stability, I recommend a restraint in the form of "0.8.*". This would take the form of:
 ```bash
-composer require "bright-components/services:0.7.*"
+composer require "bright-components/services:0.8.*"
 ```
 
 In Laravel > 5.6.0, the ServiceProvider will be automtically detected and registered.
@@ -169,35 +170,37 @@ class StoreNewTaskService
      *
      * @var array
      */
-    public $params;
+    public $repo;
 
     /**
      * Construct a new StoreNewTaskService.
      *
-     * @param  array  $params
+     * @param  \App\Models\Repositories\TaskRepository  $repo
      */
-    public function __construct(array $params)
+    public function __construct(TaskRepository $repo)
     {
-        $this->params = $params;
+        $this->repo = $repo;
     }
 
     /**
      * Handle the call to the service.
      *
+     * @param  mixed  $params
+     *
      * @return mixed
      */
-    public function run(TaskRepository $repo)
+    public function run($params)
     {
-        $task = $repo->create($this->params);
+        $task = $this->repo->create($params);
 
         return new Payload(['task' => $task]);
     }
 }
 ```
-As in the example above, simply pass any necessary data to your service constructor. You may typehint any dependencies needed by your service in the 'run' method, and they will be resolved from the container by Laravel.
+As in the example above, simply typehint any dependencies on the Service constructor. These dependencies will be resolved by Laravel from the container. Any parameters passed when calling the service, will be passed to the "run" method of the service.
 > Your Service class can ultimately return any type you need. If you prefer having a consistent return type from all of your services, you may choose to utilize the Payload class. The Payload classes are included in the [bright-components/common package](https://github.com/bright-components/common). A Payload is a wrapper for the data being sent back to your controller. You can extend the AbstractPayload class, or use one of the generic Payload classes included(Payload and ErrorPayload). *These classes do not have any functionality at the moment. Future releases prior to 1.0 may introduce methods and/or properties for these classes.*
 
-### Calling Services
+### How to call Services
 There are a few options for calling a service. The first example below, utilizes the included "CallsServices" trait. You may include this trait in your base controller so that all controllers have access.
 ```php
 namespace App\Http\Controllers;
@@ -212,7 +215,7 @@ class StoreTaskController extends StoreTaskController
 
     public function store(Request $request)
     {
-        $task = $this->call(new StoreNewTaskService($request->all()));
+        $task = $this->call(StoreNewTaskService::class, ($request->all()));
 
         return view('tasks.show', ['task' => $task]);
     }
@@ -224,30 +227,28 @@ The next option is to include the ServiceCaller via dependency injection, the us
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use BrightComponents\Services\ServiceCaller;
 use App\Services\StoreNewTaskService;
+use BrightComponents\Services\ServiceCaller;
 
 class StoreTaskController extends StoreTaskController
 {
-    use CallsServices;
+    private $caller;
 
-    private $service;
-
-    public function __construct(ServiceCaller $service)
+    public function __construct(ServiceCaller $caller)
     {
-        $this->service = $service;
+        $this->caller = $caller;
     }
 
     public function store(Request $request)
     {
-        $task = $this->service->call(new StoreNewTaskService($request->all()));
+        $task = $this->caller->call(StoreNewTaskService::class, ($request->all()));
 
         return view('tasks.show', ['task' => $task]);
     }
 }
 ```
 
-Finally, like Jobs in Laravel, the service has the ability to call itself:
+Finally, the service has the ability to call itself:
 ```php
 namespace App\Http\Controllers;
 

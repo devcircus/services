@@ -13,6 +13,6 @@ trait SelfCallingService
      */
     public static function call()
     {
-        return app(ServiceCaller::class)->call(new static(...func_get_args()));
+        return app(ServiceCaller::class)->call(static::class, ...func_get_args());
     }
 }

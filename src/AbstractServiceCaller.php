@@ -14,11 +14,12 @@ abstract class AbstractServiceCaller
     /**
      * Call a service through its appropriate handler.
      *
-     * @param  mixed  $service
+     * @param  string  $service
+     * @param  mixed  $parameters
      *
      * @return mixed
      */
-    abstract public function call($service);
+    abstract public function call(string $service, $parameters);
 
     /**
      * Determine if the given service has a handler.
