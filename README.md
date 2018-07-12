@@ -198,7 +198,8 @@ class StoreNewTaskService
 }
 ```
 As in the example above, simply typehint any dependencies on the Service constructor. These dependencies will be resolved by Laravel from the container. Any parameters passed when calling the service, will be passed to the "run" method of the service.
-> Your Service class can ultimately return any type you need. If you prefer having a consistent return type from all of your services, you may choose to utilize the Payload class. The Payload classes are included in the [bright-components/common package](https://github.com/bright-components/common). A Payload is a wrapper for the data being sent back to your controller. You can extend the AbstractPayload class, or use one of the generic Payload classes included(Payload and ErrorPayload). *These classes do not have any functionality at the moment. Future releases prior to 1.0 may introduce methods and/or properties for these classes.*
+
+> Your Service class can ultimately return any type you need. If you prefer having a consistent return type from all of your services, you may choose to utilize the Payload class. The Payload classes are included in the [bright-components/common package](https://github.com/bright-components/common). A Payload is a wrapper for the data being sent back to your controller. You can extend the AbstractPayload class, or use one of the generic Payload classes included(Payload and ErrorPayload). *These payload classes do not have any functionality at the moment. Future releases prior to 1.0 may introduce methods and/or properties for these classes.*
 
 ### How to call Services
 There are a few options for calling a service. The first example below, utilizes the included "CallsServices" trait. You may include this trait in your base controller so that all controllers have access.
@@ -265,6 +266,17 @@ class StoreTaskController extends StoreTaskController
     }
 }
 ```
+
+### Note on Service class parameters
+When calling your service class, you may pass multiple parameters:
+```php
+$this->call(MyService::class, $params, $anotherParam);
+// or
+$this->serviceCaller->call(MyService::class, $params, $anotherParam):
+// or
+MyService::call($params, $anotherParam);
+```
+I've found that usually, one array of parameters is sufficient, but you may have cases where you need to pass another parameter. Simply add these parameters when you call the Service, and these parameters will be passed to the 'run' method of your service.
 
 ### Testing
 
