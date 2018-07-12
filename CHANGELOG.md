@@ -106,3 +106,9 @@ public function __invoke(Request $request)
     $result = StoreCommentService::call($request->all());
 }
 ```
+
+## 0.8.1 - 2018-07-12
+
+- Added initial tests for ServiceMakeCommand.
+- Added ability to pass multiple parameters when calling a service.
+- Update README.
