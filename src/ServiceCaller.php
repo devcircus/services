@@ -35,17 +35,17 @@ class ServiceCaller extends AbstractServiceCaller
      * Call a service through its appropriate handler.
      *
      * @param  string  $service
-     * @param  mixed  $parameters
+     * @param  mixed  ...$params
      *
      * @return mixed
      */
-    public function call(string $service, $parameters)
+    public function call($service, ...$params)
     {
         if (! $this->hasHandler($service)) {
             throw ServiceHandlerMethodException::notFound($service);
         }
 
-        return $this->container->make($service)->{$this::$handlerMethod}($parameters);
+        return $this->container->make($service)->{$this::$handlerMethod}(...$params);
     }
 
     /**
