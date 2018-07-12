@@ -276,7 +276,18 @@ $this->serviceCaller->call(MyService::class, $params, $anotherParam):
 // or
 MyService::call($params, $anotherParam);
 ```
-I've found that usually, one array of parameters is sufficient, but you may have cases where you need to pass another parameter. Simply add these parameters when you call the Service, and these parameters will be passed to the 'run' method of your service.
+I've found that usually, one array of parameters is sufficient, but you may have cases where you need to pass another parameter. Simply add these parameters when you call the Service, and these parameters will be passed to the 'run' method of your service. Be sure the 'run' method parameters match when the service is called:
+```php
+// MyServiceClass
+
+public function run($data, $mystring, $anotherString)
+{
+    //
+}
+
+// In your controller
+MyService::call($params, $string1, $string2);
+```
 
 ### Testing
 
