@@ -12,7 +12,7 @@
 The packages under the BrightComponents namespace are basically a way for me to avoid copy/pasting simple functionality that I like in all of my projects. There's nothing groundbreaking here, just a little extra functionality for form requests, controllers, custom rules, services, etc.
 
 ### Inspiration
-BrightComponents' Service package scratches an itch I've had for a while. I routinely use single-action controllers with [Responder Classes](https://github.com/bright-components/responders), in combination with Service classes for gathering/manipulating data. In the past, I used Laravel's jobs(synchronous) for my services. There were times, though, that I needed to use jobs as well and didn't like that they were difficult to differentiate from my Service classes. Now, a quick look at my 'Services' folder and I can see a clear picture of all of my application services and my controllers are super clean!
+BrightComponents' Service package scratches an itch I've had for a while. I routinely use single-action controllers with [Responder Classes](https://github.com/bright-components/responders), in combination with Service classes for gathering/manipulating data. In early iterations of this package, I modeled Service classes after Laravel's jobs. In doing so, I utilized a ServiceCaller that functioned like Laravel's Dispatcher. At this point, I've refactored to basically creating a class and calling a method. However, at this time, I'm keeping the ServiceCaller component, as I may need it in future iterations as I get closer to a 1.0 release.
 
 Example:
 ```php
@@ -199,10 +199,12 @@ class StoreNewTaskService
 ```
 As in the example above, simply typehint any dependencies on the Service constructor. These dependencies will be resolved by Laravel from the container. Any parameters passed when calling the service, will be passed to the "run" method of the service.
 
-> Your Service class can ultimately return any type you need. If you prefer having a consistent return type from all of your services, you may choose to utilize the Payload class. The Payload classes are included in the [bright-components/common package](https://github.com/bright-components/common). A Payload is a wrapper for the data being sent back to your controller. You can extend the AbstractPayload class, or use one of the generic Payload classes included(Payload and ErrorPayload). *These payload classes do not have any functionality at the moment. Future releases prior to 1.0 may introduce methods and/or properties for these classes.*
+> For consistency, you may choose to wrap your Service class returns in a Payload object. The Payload classes are included in the [bright-components/common package](https://github.com/bright-components/common). A Payload is a wrapper for the data being sent back to your controller. You can extend the AbstractPayload class, or use one of the generic Payload classes included(Payload and ErrorPayload). *These payload classes do not have any functionality at the moment. Future releases prior to 1.0 may introduce methods and/or properties for these classes.*
 
 ### How to call Services
-There are a few options for calling a service. The first example below, utilizes the included "CallsServices" trait. You may include this trait in your base controller so that all controllers have access.
+At this time, there are several options for calling a service. Ideally, I'd like to only have a couple of options. As we near a 1.0 release, these options are likely to change.
+
+First, you may use the included 'CallsServices' trait:
 ```php
 namespace App\Http\Controllers;
 
@@ -210,7 +212,7 @@ use Illuminate\Http\Request;
 use App\Services\StoreNewTaskService;
 use BrightComponents\Services\Traits\CallsServices;
 
-class StoreTaskController extends StoreTaskController
+class StoreTaskController extends Controller
 {
     use CallsServices;
 
@@ -231,7 +233,7 @@ use Illuminate\Http\Request;
 use App\Services\StoreNewTaskService;
 use BrightComponents\Services\ServiceCaller;
 
-class StoreTaskController extends StoreTaskController
+class StoreTaskController extends Controllerr
 {
     private $caller;
 
@@ -249,18 +251,43 @@ class StoreTaskController extends StoreTaskController
 }
 ```
 
-Finally, the service has the ability to call itself:
+Next, the service has the ability to call itself:
 ```php
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\StoreNewTaskService;
 
-class StoreTaskController extends StoreTaskController
+class StoreTaskController extends Controller
 {
     public function store(Request $request)
     {
         $task = StoreNewTaskService::call($request->all());
+
+        return view('tasks.show', ['task' => $task]);
+    }
+}
+```
+
+Last, and probably the most common way, is to inject the Service class in your Controller or Action, and call the 'run' method:
+```php
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Services\StoreNewTaskService;
+
+class StoreTaskController extends Controllerr
+{
+    private $service;
+
+    public function __construct(StoreNewTaskService $service)
+    {
+        $this->service = $service;
+    }
+
+    public function store(Request $request)
+    {
+        $task = $this->service->run($request->all());
 
         return view('tasks.show', ['task' => $task]);
     }
@@ -275,7 +302,10 @@ $this->call(MyService::class, $params, $anotherParam);
 $this->serviceCaller->call(MyService::class, $params, $anotherParam):
 // or
 MyService::call($params, $anotherParam);
+// or
+$service->run($params, $anotherParam);
 ```
+
 I've found that usually, one array of parameters is sufficient, but you may have cases where you need to pass another parameter. Simply add these parameters when you call the Service, and these parameters will be passed to the 'run' method of your service. Be sure the 'run' method parameters match when the service is called:
 ```php
 // MyServiceClass
