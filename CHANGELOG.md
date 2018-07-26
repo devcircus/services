@@ -112,3 +112,7 @@ public function __invoke(Request $request)
 - Added initial tests for ServiceMakeCommand.
 - Added ability to pass multiple parameters when calling a service.
 - Update README.
+
+## 0.8.2 - 2018-07-26
+
+- With the new bright-components/adr package, we're changing the command namespace from 'bright' to 'adr'.

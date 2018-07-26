@@ -147,7 +147,7 @@ Once the package is installed and the config is copied (optionally), you can beg
 From inside your project directory, in your terminal, run:
 
 ```bash
-php artisan bright:service StoreNewTask
+php artisan adr:service StoreNewTask
 ```
 
 Based on the configuration options above, this will create an 'App\Services\StoreNewTaskService' class.
