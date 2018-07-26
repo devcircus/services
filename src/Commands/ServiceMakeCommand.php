@@ -13,7 +13,7 @@ class ServiceMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'bright:service {name}';
+    protected $signature = 'adr:service {name}';
 
     /**
      * The console command description.
