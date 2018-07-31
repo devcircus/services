@@ -76,9 +76,6 @@ class CachedServiceMakeCommand extends GeneratorCommand
      */
     protected function getNameInput()
     {
-        $input = $input = studly_case(trim($this->argument('name')));
-        $prefix = Config::get('service-classes.cached_services.prefix');
-
-        return str_start($input, $prefix);
+        return studly_case(trim($this->argument('name')));
     }
 }

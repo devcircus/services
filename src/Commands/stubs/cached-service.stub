@@ -5,12 +5,12 @@ namespace DummyNamespace;
 use Illuminate\Support\Facades\Cache;
 use BrightComponents\Services\Traits\CachedService;
 
-class DummyClass
+abstract class DummyClass
 {
     use CachedService;
 
     /** @var string */
-    protected $queryKey = '';
+    protected $cacheKey;
 
     /**
      * Construct a new DummyClass.
@@ -25,40 +25,14 @@ class DummyClass
     /**
      * Cache the response of the call to the service.
      *
-     * @param  array  $params
-     *
      * @return mixed
      */
-    public function cache($params)
-    {
-        //return Cache::rememberForever($this->getCacheKey($orders->first()->report_created), function () use ($params) {
-            //return $this->service->run($params);
-        //});
-    }
+    abstract public function cache($params);
 
     /**
-     * Get the key for caching.
-     *
-     * @param  string  $date
+     * Configure the key to use for caching.
      *
      * @return string
      */
-    protected function getCacheKey(string $date)
-    {
-        return md5(sprintf(
-            '%s-%s',
-            $this->getQueryKey(),
-            Carbon::createFromFormat('Y-m-d H:i:s', $date)->timestamp
-        ));
-    }
-
-    /**
-     * Get the key used for cache.
-     *
-     * @return string
-     */
-    protected function getQueryKey()
-    {
-        return $this->queryKey;
-    }
+    abstract public function configureCacheKey();
 }

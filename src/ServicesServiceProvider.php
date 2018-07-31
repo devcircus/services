@@ -58,6 +58,8 @@ class ServicesServiceProvider extends BaseServiceProvider
             $content = file_get_contents(__DIR__.'/stubs/cached-services-provider.stub');
             file_put_contents(app_path().'/Providers/CachedServicesServiceProvider.php', $content);
         }
+
+        $this->app->register('App\Providers\CachedServicesServiceProvider');
     }
 
     /**
