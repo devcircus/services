@@ -11,10 +11,10 @@ trait CachedService
      *
      * @return mixed
      */
-    public static function call($parameters)
+    public static function call(...$parameters)
     {
         $decorator = resolve(static::class);
 
-        return $decorator->cache($parameters);
+        return $decorator->cache(...$parameters);
     }
 }
