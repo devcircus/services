@@ -137,6 +137,48 @@ return [
     |
     */
     'override_duplicate_suffix' => true,
+
+    'cached_services' => [
+        /*
+        |--------------------------------------------------------------------------
+        | Namespaces
+        |--------------------------------------------------------------------------
+        |
+        | Set the namespace for cached Service classes. The namespace is relative to the Services namespace defined above.
+        |
+        */
+        'namespace' => 'Caching',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Namespaces
+        |--------------------------------------------------------------------------
+        |
+        | Set the prefix for cached Service classes.
+        |
+        */
+        'prefix' => 'Cached',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Parent class
+        |--------------------------------------------------------------------------
+        |
+        | The shortname for the parent cached services class.
+        |
+        */
+        'parent' => 'BaseCachedService',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Classes
+        |--------------------------------------------------------------------------
+        |
+        | The FQCN of the cached services.
+        |
+        */
+        'classes' => [],
+    ],
 ];
 ```
 
@@ -200,6 +242,9 @@ class StoreNewTaskService
 As in the example above, simply typehint any dependencies on the Service constructor. These dependencies will be resolved by Laravel from the container. Any parameters passed when calling the service, will be passed to the "run" method of the service.
 
 > For consistency, you may choose to wrap your Service class returns in a Payload object. The Payload classes are included in the [bright-components/common package](https://github.com/bright-components/common). A Payload is a wrapper for the data being sent back to your controller. You can extend the AbstractPayload class, or use one of the generic Payload classes included(Payload and ErrorPayload). *These payload classes do not have any functionality at the moment. Future releases prior to 1.0 may introduce methods and/or properties for these classes.*
+
+### Generating a Service class
+Cached services are a WIP. We'll update this place when complete.
 
 ### How to call Services
 At this time, there are several options for calling a service. Ideally, I'd like to only have a couple of options. As we near a 1.0 release, these options are likely to change.
@@ -306,7 +351,7 @@ MyService::call($params, $anotherParam);
 $service->run($params, $anotherParam);
 ```
 
-I've found that usually, one array of parameters is sufficient, but you may have cases where you need to pass another parameter. Simply add these parameters when you call the Service, and these parameters will be passed to the 'run' method of your service. Be sure the 'run' method parameters match when the service is called:
+I've found that usually, one array of parameters is sufficient, but you may have cases where you need to pass another parameter. Simply add these parameters when you call the Service, and these parameters will be passed to the 'run' method of your service. Be sure the 'run' method parameters match the arguments used, when the service is called:
 ```php
 // MyServiceClass
 
