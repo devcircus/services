@@ -1,0 +1,12 @@
+<?php
+
+namespace DummyNamespace;
+
+use Illuminate\Support\Facades\Cache;
+use {DummyParentFqcn};
+
+class DummyClass extends {DummyParent}
+{
+    /** @var string */
+    protected $cacheKey = '';
+}

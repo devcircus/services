@@ -42,4 +42,46 @@ return [
     |
     */
     'override_duplicate_suffix' => true,
+
+    'cached_services' => [
+        /*
+        |--------------------------------------------------------------------------
+        | Namespaces
+        |--------------------------------------------------------------------------
+        |
+        | Set the namespace for cached Service classes. The namespace is relative to the Services namespace defined above.
+        |
+        */
+        'namespace' => 'Caching',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Namespaces
+        |--------------------------------------------------------------------------
+        |
+        | Set the prefix for cached Service classes.
+        |
+        */
+        'prefix' => 'Cached',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Parent class
+        |--------------------------------------------------------------------------
+        |
+        | The shortname for the parent cached services class.
+        |
+        */
+        'parent' => 'BaseCachedService',
+
+        /*
+        |--------------------------------------------------------------------------
+        | Classes
+        |--------------------------------------------------------------------------
+        |
+        | The FQCN of the cached services.
+        |
+        */
+        'classes' => [],
+    ],
 ];

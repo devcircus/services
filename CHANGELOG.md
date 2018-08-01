@@ -116,3 +116,8 @@ public function __invoke(Request $request)
 ## 0.8.2 - 2018-07-26
 
 - With the new bright-components/adr package, we're changing the command namespace from 'bright' to 'adr'.
+
+## 0.8.3 - 2018-08-01
+
+- Add cached services generator command.
+- WIP

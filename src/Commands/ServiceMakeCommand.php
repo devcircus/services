@@ -68,7 +68,7 @@ class ServiceMakeCommand extends GeneratorCommand
     }
 
     /**
-     * Get the default namespace for the class.
+     * Get the method name for the class.
      *
      * @param  string  $rootNamespace
      *

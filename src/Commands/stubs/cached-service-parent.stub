@@ -1,0 +1,44 @@
+<?php
+
+namespace DummyNamespace;
+
+use Illuminate\Support\Facades\Cache;
+use BrightComponents\Services\Traits\CachedService;
+
+class DummyClass
+{
+    use CachedService;
+
+    /** @var string */
+    protected $cacheKey;
+
+    /**
+     * Construct a new DummyClass.
+     *
+     * @param  mixed  $service
+     */
+    public function __construct($service)
+    {
+        $this->service = $service;
+    }
+
+    /**
+     * Cache the response of the call to the service.
+     *
+     * @return mixed
+     */
+    public function cache()
+    {
+        //
+    }
+
+    /**
+     * Configure the key to use for caching.
+     *
+     * @return string
+     */
+    public function configureCacheKey()
+    {
+        //
+    }
+}

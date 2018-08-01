@@ -2,11 +2,16 @@
 
 namespace BrightComponents\Services;
 
+use Illuminate\Support\Facades\Config;
 use BrightComponents\Services\Commands\ServiceMakeCommand;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use BrightComponents\Services\Commands\CachedServiceMakeCommand;
 
 class ServicesServiceProvider extends BaseServiceProvider
 {
+    /** @var array */
+    protected $cachedServices = [];
+
     /**
      * Indicates if loading of the provider is deferred.
      *
@@ -44,9 +49,19 @@ class ServicesServiceProvider extends BaseServiceProvider
 
         $this->commands([
             ServiceMakeCommand::class,
+            CachedServiceMakeCommand::class,
         ]);
 
         ServiceCaller::setHandlerMethod(config('service-classes.method', 'run'));
+
+        if ('testing' != $this->app->environment()) {
+            if (! file_exists(app_path().'/Providers/CachedServicesServiceProvider.php')) {
+                $content = file_get_contents(__DIR__.'/stubs/cached-services-provider.stub');
+                file_put_contents(app_path().'/Providers/CachedServicesServiceProvider.php', $content);
+            }
+
+            $this->app->register('App\Providers\CachedServicesServiceProvider');
+        }
     }
 
     /**
