@@ -54,12 +54,14 @@ class ServicesServiceProvider extends BaseServiceProvider
 
         ServiceCaller::setHandlerMethod(config('service-classes.method', 'run'));
 
-        if (! file_exists(app_path().'/Providers/CachedServicesServiceProvider.php')) {
-            $content = file_get_contents(__DIR__.'/stubs/cached-services-provider.stub');
-            file_put_contents(app_path().'/Providers/CachedServicesServiceProvider.php', $content);
-        }
+        if ('testing' != $this->app->environment()) {
+            if (! file_exists(app_path().'/Providers/CachedServicesServiceProvider.php')) {
+                $content = file_get_contents(__DIR__.'/stubs/cached-services-provider.stub');
+                file_put_contents(app_path().'/Providers/CachedServicesServiceProvider.php', $content);
+            }
 
-        $this->app->register('App\Providers\CachedServicesServiceProvider');
+            $this->app->register('App\Providers\CachedServicesServiceProvider');
+        }
     }
 
     /**
