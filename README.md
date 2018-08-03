@@ -174,7 +174,7 @@ return [
         | Classes
         |--------------------------------------------------------------------------
         |
-        | The FQCN of the cached services.
+        | The mapping of cached services to their base service.
         |
         */
         'classes' => [],
@@ -243,8 +243,8 @@ As in the example above, simply typehint any dependencies on the Service constru
 
 > For consistency, you may choose to wrap your Service class returns in a Payload object. The Payload classes are included in the [bright-components/common package](https://github.com/bright-components/common). A Payload is a wrapper for the data being sent back to your controller. You can extend the AbstractPayload class, or use one of the generic Payload classes included(Payload and ErrorPayload). *These payload classes do not have any functionality at the moment. Future releases prior to 1.0 may introduce methods and/or properties for these classes.*
 
-### Generating a Service class
-Cached services are a WIP. We'll update this place when complete.
+### Generating a Cached Service class
+Cached services are a WIP. We'll update this place when complete. May generalize to a decorator service???
 
 ### How to call Services
 At this time, there are several options for calling a service. Ideally, I'd like to only have a couple of options. As we near a 1.0 release, these options are likely to change.
