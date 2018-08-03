@@ -121,3 +121,8 @@ public function __invoke(Request $request)
 
 - Add cached services generator command.
 - WIP
+
+## 0.8.4 - 2018-08-01
+
+- Removed unnecessary creation of CachedServicesServiceProvider.
+- Updated how cached services are resolved in the CachedService trait.
