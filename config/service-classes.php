@@ -79,9 +79,9 @@ return [
         | Classes
         |--------------------------------------------------------------------------
         |
-        | The FQCN of the cached services.
+        | The mapping of cached services to their base service.
         |
-        */
+         */
         'classes' => [],
     ],
 ];
