@@ -126,3 +126,7 @@ public function __invoke(Request $request)
 
 - Removed unnecessary creation of CachedServicesServiceProvider.
 - Updated how cached services are resolved in the CachedService trait.
+
+## 1.0.0-beta.1 - 2018-09-01
+
+- First beta release. Features locked.
