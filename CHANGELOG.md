@@ -130,3 +130,7 @@ public function __invoke(Request $request)
 ## 1.0.0-beta.1 - 2018-09-01
 
 - First beta release. Features locked.
+
+## 1.0.0-beta.1.1 - 2018-09-03
+
+- Fix bright-components/common version in composer.json.
