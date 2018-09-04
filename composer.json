@@ -1,7 +1,7 @@
 {
     "name": "bright-components/services",
     "description": "Service Implementation for Laravel Projects",
-    "version": "1.0.0-beta.1",
+    "version": "1.0.0-beta.1.1",
     "keywords": [
         "bright-components",
         "servicehandler"
@@ -22,7 +22,7 @@
         "illuminate/console": "5.6.*",
         "illuminate/support": "5.6.*",
         "illuminate/contracts": "5.6.*",
-        "bright-components/common": "^0.1.0"
+        "bright-components/common": "1.0.*@dev"
     },
     "require-dev": {
         "mockery/mockery": "0.9.*",
