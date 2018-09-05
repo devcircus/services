@@ -4,81 +4,83 @@ All notable changes to BrightComponents/Services will be documented in this file
 
 ## 0.1.0 - 2018-05-21
 
-- initial release
+-   initial release
 
 ## 0.2.0 - 2018-06-05
 
-- Add autoloading of services
-- Add definition and handler suffixes to configuration
-- Add 'autoload' option to configuration
-- Fix Handler naming issue when using make:service command
+-   Add autoloading of services
+-   Add definition and handler suffixes to configuration
+-   Add 'autoload' option to configuration
+-   Fix Handler naming issue when using make:service command
 
 ## 0.3.0 - 2018-06-05
 
-- Add self-handling services
+-   Add self-handling services
 
 ## 0.4.0 - 2018-06-11
 
-- Add ability to cache the autoloaded service/handler mapping.
-- Fixed generating and loading of services in nested namespaces.
-- Removed helpers that had a dependency on Illuminate\Foundation.
-- Rename 'service_suffix' to 'definition_suffix' for clarity.
-- Refactored the Service Translator
+-   Add ability to cache the autoloaded service/handler mapping.
+-   Fixed generating and loading of services in nested namespaces.
+-   Removed helpers that had a dependency on Illuminate\Foundation.
+-   Rename 'service_suffix' to 'definition_suffix' for clarity.
+-   Refactored the Service Translator
 
 ## 0.4.1 - 2018-06-11
 
-- Fix config only working in console.
+-   Fix config only working in console.
 
 ## 0.5.0 - 2018-06-17
 
-- Replace "autoloading" and cache features with runtime translating.
-- Update dependencies and cleanup unused and unnecessary code.
+-   Replace "autoloading" and cache features with runtime translating.
+-   Update dependencies and cleanup unused and unnecessary code.
 
 ## 0.5.1 - 2018-06-18
 
-- Add docblocks to translator and interface.
-- Fix comments in configuration to clarify parent namespace of self-handling services.
+-   Add docblocks to translator and interface.
+-   Fix comments in configuration to clarify parent namespace of self-handling services.
 
 ## 0.6.0 - 2018-07-01
 
-- Replace the Service Definitions/Handler structure with a self-handling implementation.
+-   Replace the Service Definitions/Handler structure with a self-handling implementation.
 
 ## 0.6.1 - 2018-07-01
 
-- Add a payload object for wrapping the result of the domain, to send to the responder.
-- Add a trait to Services to allow a service to call itself. ie. MyService::call()
+-   Add a payload object for wrapping the result of the domain, to send to the responder.
+-   Add a trait to Services to allow a service to call itself. ie. MyService::call()
 
 ## 0.6.2 - 2018-07-02
 
-- Fix Payload namespace.
+-   Fix Payload namespace.
 
 ## 0.6.3 - 2018-07-02
 
-- Second attempt to fix Payload namespace.
+-   Second attempt to fix Payload namespace.
 
 ## 0.6.4 - 2018-07-03
 
-- Extract the Payload classes to bright-components/common package.
-- Update README to reflect this change.
+-   Extract the Payload classes to bright-components/common package.
+-   Update README to reflect this change.
 
 ## 0.7.0 - 2018-07-04
 
-- With Handler functionality removed, rename package to 'services' from 'servicehandler'.
+-   With Handler functionality removed, rename package to 'services' from 'servicehandler'.
 
 ## 0.7.1 - 2018-07-04
 
-- Bump version to pull in master, including the new code coverage reporter id.
+-   Bump version to pull in master, including the new code coverage reporter id.
 
 ## 0.7.2 - 2018-07-08
 
-- Rename make:service command namespace to "bright".
+-   Rename make:service command namespace to "bright".
 
 ## 0.8.0 - 2018-07-10
 
-- In Service classes, auto-resolved dependencies have been moved from the "run" method to the constructor. Parameters have been moved from the constructor to the "run" method.
+-   In Service classes, auto-resolved dependencies have been moved from the "run" method to the constructor. Parameters have been moved from the constructor to the "run" method.
 
 ### New Ways to Call Services
-- Using the "CallsServices" trait:
+
+-   Using the "CallsServices" trait:
+
 ```php
 public function __invoke(Request $request)
 {
@@ -86,7 +88,8 @@ public function __invoke(Request $request)
 }
 ```
 
-- Injecting the ServiceCaller and using the "call" method:
+-   Injecting the ServiceCaller and using the "call" method:
+
 ```php
 public function __construct(ServiceCaller $caller)
 {
@@ -99,7 +102,8 @@ public function __invoke(Request $request)
 }
 ```
 
-- Using the "call" method of the Service class itself:
+-   Using the "call" method of the Service class itself:
+
 ```php
 public function __invoke(Request $request)
 {
@@ -109,28 +113,32 @@ public function __invoke(Request $request)
 
 ## 0.8.1 - 2018-07-12
 
-- Added initial tests for ServiceMakeCommand.
-- Added ability to pass multiple parameters when calling a service.
-- Update README.
+-   Added initial tests for ServiceMakeCommand.
+-   Added ability to pass multiple parameters when calling a service.
+-   Update README.
 
 ## 0.8.2 - 2018-07-26
 
-- With the new bright-components/adr package, we're changing the command namespace from 'bright' to 'adr'.
+-   With the new bright-components/adr package, we're changing the command namespace from 'bright' to 'adr'.
 
 ## 0.8.3 - 2018-08-01
 
-- Add cached services generator command.
-- WIP
+-   Add cached services generator command.
+-   WIP
 
 ## 0.8.4 - 2018-08-01
 
-- Removed unnecessary creation of CachedServicesServiceProvider.
-- Updated how cached services are resolved in the CachedService trait.
+-   Removed unnecessary creation of CachedServicesServiceProvider.
+-   Updated how cached services are resolved in the CachedService trait.
 
 ## 1.0.0-beta.1 - 2018-09-01
 
-- First beta release. Features locked.
+-   First beta release. Features locked.
 
 ## 1.0.0-beta.1.1 - 2018-09-03
 
-- Fix bright-components/common version in composer.json.
+-   Fix bright-components/common version in composer.json.
+
+## 1.0.0-beta.1.2 - 2018-09-05
+
+-   Upgrade laravel framework dependency to 5.7 and change to require the entire framework.
