@@ -146,3 +146,7 @@ public function __invoke(Request $request)
 ## 1.0.0-beta.1.3 - 2019-02-28
 
 -   Update for compatibility with Laravel 5.8
+
+## 1.0.0-beta.1.4 - 2019-03-22
+
+-   Update bright-components/common dependency version.
