@@ -150,3 +150,7 @@ public function __invoke(Request $request)
 ## 1.0.0-beta.1.4 - 2019-03-22
 
 -   Update bright-components/common dependency version.
+
+## 1.0.0 - 2019-03-23
+
+-   Initial stable release.
