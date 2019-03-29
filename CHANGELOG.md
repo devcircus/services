@@ -154,3 +154,7 @@ public function __invoke(Request $request)
 ## 1.0.0 - 2019-03-23
 
 -   Initial stable release.
+
+## 2.0.0 - 2019-03-28
+
+-   Update Common dependency. This update could cause bc breaks, so the version has been bumped to 2.0.
